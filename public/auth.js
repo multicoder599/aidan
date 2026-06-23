@@ -5,9 +5,11 @@
  * ═══════════════════════════════════════════════
  */
 
+// Frontend: https://aviatorpros.surge.sh
+// Backend: VPS on port 3041
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:3041/api' 
-  : (window.location.origin + '/api');
+  : 'http://213.199.41.83:3041/api';
 
 class AuthManager {
   constructor() {
@@ -205,9 +207,11 @@ function initAuthUI() {
     updateAuthUI(isLoggedIn, user);
   });
 
-  // Initial check
+  // Initial check - render buttons for BOTH logged in AND guest users
   if (window.authManager.isLoggedIn) {
     updateAuthUI(true, window.authManager.user);
+  } else {
+    updateAuthUI(false, null);
   }
 }
 
@@ -411,14 +415,18 @@ function showAuthMessage(text, type) {
 
 function updateAuthUI(isLoggedIn, user) {
   const headerRight = document.querySelector('.header-right');
-  if (!headerRight) return;
+  if (!headerRight) {
+    console.warn('[Auth] .header-right not found, retrying...');
+    setTimeout(() => updateAuthUI(isLoggedIn, user), 500);
+    return;
+  }
 
   // Find or create auth buttons container
   let authContainer = document.getElementById('authButtonsContainer');
   if (!authContainer) {
     authContainer = document.createElement('div');
     authContainer.id = 'authButtonsContainer';
-    authContainer.style.cssText = 'display:flex; align-items:center; gap:8px; margin-left:auto;';
+    authContainer.style.cssText = 'display:flex !important; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; z-index:100;';
     headerRight.appendChild(authContainer);
   }
 
@@ -464,10 +472,10 @@ function updateAuthUI(isLoggedIn, user) {
     if (partnerNavUsername) partnerNavUsername.textContent = user.username;
 
   } else {
-    // Show login/register buttons
+    // Show login/register buttons - FORCE VISIBLE
     authContainer.innerHTML = `
-      <button id="loginBtn" style="background:transparent; border:1px solid rgba(255,255,255,0.15); color:#fff; padding:6px 16px; border-radius:6px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.2s;">Log In</button>
-      <button id="registerBtn" style="background:linear-gradient(180deg, #e50539, #b0042d); border:none; color:#fff; padding:6px 16px; border-radius:6px; font-size:0.78rem; font-weight:700; cursor:pointer; box-shadow:0 2px 8px rgba(229,5,57,0.3);">Register</button>
+      <button id="loginBtn" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; display:inline-block;">Log In</button>
+      <button id="registerBtn" style="background:linear-gradient(180deg, #e50539, #b0042d); border:none; color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:800; cursor:pointer; box-shadow:0 2px 12px rgba(229,5,57,0.4); white-space:nowrap; display:inline-block;">Register</button>
     `;
 
     document.getElementById('loginBtn').addEventListener('click', () => showAuthModal('login'));

@@ -19,9 +19,7 @@ app.use(compression());
 
 // CORS - allow all origins including surge.sh
 app.use(cors({
-  origin: function(origin, callback) {
-    callback(null, true);
-  },
+  origin: ['https://aviatorpros.surge.sh', 'http://aviatorpros.surge.sh', 'http://213.199.41.83:3041', 'http://localhost:3000', 'http://localhost:3041'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
