@@ -10,6 +10,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3041;
 
+// FIX: Trust proxy for express-rate-limit behind nginx
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: false,
@@ -69,7 +72,131 @@ mongoose.connection.on('disconnected', () => {
   console.log('🟡 Mongoose disconnected');
 });
 
-// Routes
+// ═══════════════════════════════════════════════
+// STUB ROUTES — Frontend Compatibility Layer
+// Prevents 404s and SSE MIME type errors
+// ═══════════════════════════════════════════════
+
+const clientRegistry = new Map();
+let currentPrediction = null;
+let currentGameState = 'waiting';
+
+// Game engine sync stubs
+app.post('/api/next', (req, res) => {
+  const { round } = req.body;
+  const crashPoint = 1.5 + Math.random() * 5;
+  currentPrediction = crashPoint;
+  res.json({ success: true, crashPoint: parseFloat(crashPoint.toFixed(2)) });
+});
+
+app.post('/api/flying', (req, res) => {
+  const { round, crashPoint } = req.body;
+  currentGameState = 'flying';
+  res.json({ success: true });
+});
+
+app.post('/api/complete', (req, res) => {
+  const { round, crashPoint } = req.body;
+  currentGameState = 'waiting';
+  currentPrediction = null;
+  res.json({ success: true });
+});
+
+app.post('/api/state', (req, res) => {
+  const { state } = req.body;
+  currentGameState = state;
+  res.json({ success: true });
+});
+
+app.get('/api/prediction', (req, res) => {
+  res.json({
+    gameState: currentGameState,
+    prediction: currentPrediction,
+    currentCrashPoint: currentGameState === 'flying' ? currentPrediction : null,
+    elapsedMs: 0,
+    waitElapsedMs: 0,
+    crashElapsedMs: 0
+  });
+});
+
+app.get('/api/predictor-stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+  const timer = setInterval(() => {
+    res.write(':keepalive\n\n');
+  }, 30000);
+  req.on('close', () => clearInterval(timer));
+});
+
+app.post('/api/heartbeat', (req, res) => {
+  res.json({ success: true });
+});
+
+// Client sync stubs
+app.post('/api/client/connect', (req, res) => {
+  const { site, username, balance, currency } = req.body;
+  const clientId = 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  const clientData = {
+    id: clientId,
+    site: site || 'main',
+    username: username || 'Guest',
+    balance: balance || 10000,
+    currency: currency || 'USD',
+    connectedAt: new Date()
+  };
+  clientRegistry.set(clientId, clientData);
+  res.json({ success: true, client: clientData });
+});
+
+app.get('/api/client/:id/settings', (req, res) => {
+  const client = clientRegistry.get(req.params.id);
+  if (!client) return res.status(404).json({ success: false, message: 'Client not found' });
+  res.json({ success: true, client });
+});
+
+app.get('/api/client/stream/:id', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+  const timer = setInterval(() => {
+    res.write(':keepalive\n\n');
+  }, 30000);
+  req.on('close', () => clearInterval(timer));
+});
+
+app.post('/api/client/heartbeat', (req, res) => {
+  res.json({ success: true });
+});
+
+app.post('/api/client/disconnect', (req, res) => {
+  const { clientId } = req.body;
+  if (clientId) clientRegistry.delete(clientId);
+  res.json({ success: true });
+});
+
+app.post('/api/client/update-balance', (req, res) => {
+  const { clientId, balance } = req.body;
+  const client = clientRegistry.get(clientId);
+  if (client) client.balance = balance;
+  res.json({ success: true });
+});
+
+app.post('/api/interbet/sync-session', (req, res) => {
+  res.json({ success: true });
+});
+
+// Withdrawal activation stub
+app.post('/api/activate', (req, res) => {
+  res.json({ success: true, valid: true });
+});
+
+// ═══════════════════════════════════════════════
+// MAIN APP ROUTES
+// ═══════════════════════════════════════════════
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/user', require('./routes/user'));
 app.use('/api/game', require('./routes/game'));

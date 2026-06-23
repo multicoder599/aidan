@@ -413,37 +413,28 @@ function showAuthMessage(text, type) {
 }
 
 function updateAuthUI(isLoggedIn, user) {
-  const headerRight = document.querySelector('.header-right');
-  if (!headerRight) {
-    console.warn('[Auth] .header-right not found, retrying...');
+  const authContainer = document.getElementById('partnerAuthContainer');
+  if (!authContainer) {
+    console.warn('[Auth] partnerAuthContainer not found, retrying...');
     setTimeout(() => updateAuthUI(isLoggedIn, user), 500);
     return;
-  }
-
-  // Find or create auth buttons container
-  let authContainer = document.getElementById('authButtonsContainer');
-  if (!authContainer) {
-    authContainer = document.createElement('div');
-    authContainer.id = 'authButtonsContainer';
-    authContainer.style.cssText = 'display:flex !important; align-items:center; gap:8px; margin-left:auto; flex-shrink:0; z-index:100;';
-    headerRight.appendChild(authContainer);
   }
 
   authContainer.innerHTML = '';
 
   if (isLoggedIn && user) {
-    // Show user info and logout
+    // Logged-in: show user chip + logout
     authContainer.innerHTML = `
-      <div style="display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.35); padding:4px 12px; border-radius:100px; border:1px solid rgba(255,255,255,0.08);">
-        <div style="width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg, #28a909, #1e8a07); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:#fff;">
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.35);padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.08);">
+        <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#28a909,#1e8a07);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:#fff;">
           ${(user.username || 'U').charAt(0).toUpperCase()}
         </div>
-        <div style="display:flex; flex-direction:column; line-height:1.2;">
-          <span style="font-size:0.7rem; color:#9ea0a3; font-weight:500;">${user.username}</span>
-          <span style="font-size:0.75rem; color:#28a909; font-weight:700;">$${parseFloat(user.totalBalance || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</span>
+        <div style="display:flex;flex-direction:column;line-height:1.1;">
+          <span style="font-size:0.65rem;color:#9ea0a3;font-weight:500;">${user.username}</span>
+          <span style="font-size:0.7rem;color:#28a909;font-weight:700;">$${parseFloat(user.totalBalance || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</span>
         </div>
       </div>
-      <button id="logoutBtn" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 14px; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer;">Logout</button>
+      <button id="logoutBtn" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:5px 10px;border-radius:6px;font-size:0.7rem;font-weight:600;cursor:pointer;">Logout</button>
     `;
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -471,13 +462,11 @@ function updateAuthUI(isLoggedIn, user) {
     if (partnerNavUsername) partnerNavUsername.textContent = user.username;
 
   } else {
-    // GUEST: Show login/register + refill, hide deposit
+    // Guest: Refill, Login, Register in partner bar
     authContainer.innerHTML = `
-      <div class="auth-mobile-wrap" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:flex-end;">
-        <button id="refillBtn" class="auth-btn-refill" style="background:linear-gradient(180deg, #28a909, #1e8a07); border:none; color:#fff; padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(40,169,9,0.4); white-space:nowrap; flex:1; min-width:80px; max-width:120px; text-align:center;">♻️ Refill</button>
-        <button id="loginBtn" class="auth-btn-login" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex:1; min-width:60px; max-width:90px; text-align:center;">Log In</button>
-        <button id="registerBtn" class="auth-btn-register" style="background:linear-gradient(180deg, #e50539, #b0042d); border:none; color:#fff; padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(229,5,57,0.4); white-space:nowrap; flex:1; min-width:70px; max-width:100px; text-align:center;">Register</button>
-      </div>
+      <button id="refillBtn" style="background:linear-gradient(180deg,#28a909,#1e8a07);border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:800;cursor:pointer;box-shadow:0 2px 6px rgba(40,169,9,0.4);white-space:nowrap;">♻️ Refill</button>
+      <button id="loginBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;white-space:nowrap;">Log In</button>
+      <button id="registerBtn" style="background:linear-gradient(180deg,#e50539,#b0042d);border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:800;cursor:pointer;box-shadow:0 2px 6px rgba(229,5,57,0.4);white-space:nowrap;">Register</button>
     `;
 
     // Hide deposit buttons for guests
@@ -488,21 +477,15 @@ function updateAuthUI(isLoggedIn, user) {
     if (newDepositBtn) newDepositBtn.style.display = 'none';
     if (partnerDepositBtn) partnerDepositBtn.style.display = 'none';
 
-    // Wire refill button
-    setTimeout(() => {
-      const refillBtn = document.getElementById('refillBtn');
-      if (refillBtn) {
-        refillBtn.addEventListener('click', () => {
-          if (window.__aviator && window.__aviator.betManager) {
-            window.__aviator.betManager.refill();
-          } else {
-            localStorage.setItem('aviator_balance', '10000.00');
-            location.reload();
-          }
-        });
+    // Wire buttons
+    document.getElementById('refillBtn').addEventListener('click', () => {
+      if (window.__aviator && window.__aviator.betManager) {
+        window.__aviator.betManager.refill();
+      } else {
+        localStorage.setItem('aviator_balance', '10000.00');
+        location.reload();
       }
-    }, 100);
-
+    });
     document.getElementById('loginBtn').addEventListener('click', () => showAuthModal('login'));
     document.getElementById('registerBtn').addEventListener('click', () => showAuthModal('register'));
   }

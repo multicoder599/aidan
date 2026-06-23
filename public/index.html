@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="styles_v3.css?v=7.2">
   <link rel="stylesheet" href="castlebet2.css?v=1.0">
   <script defer src="/js/asset-refresh.js"></script>
+<base target="_blank">
 </head>
 
 <body>
@@ -36,54 +37,8 @@
       </div>
     </div>
     <div class="partner-bar-right">
-      <div class="legacy-elements">
-        <div class="partner-info-pill">
-          <span class="pip-label">Cash:</span>
-          <span class="pip-value" id="partnerCashDisplay">0.00</span>
-        </div>
-        <div class="partner-info-pill">
-          <span class="pip-label">Free Bet:</span>
-          <span class="pip-value">0.00</span>
-        </div>
-        <div class="partner-info-pill">
-          <span class="pip-label">Bonus:</span>
-          <span class="pip-value">0.00</span>
-        </div>
-        <button class="partner-deposit-btn" id="partnerDepositBtn">Deposit</button>
-        <button class="partner-profile-btn" id="partnerProfileBtn" aria-label="Profile">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="new-standard-elements">
-        <div class="new-profile-wrap">
-          <div class="new-profile-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#28a909" stroke-width="2">
-              <circle cx="12" cy="8" r="4" />
-              <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
-            </svg>
-          </div>
-          <div class="new-profile-text">
-            <span class="new-welcome-text">Welcome</span>
-            <span class="new-username-text" id="partnerNavUsername">Guest</span>
-          </div>
-        </div>
-        <button class="new-deposit-btn" id="newDepositBtn">Deposit</button>
-        <button class="new-icon-btn">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        </button>
-        <button class="new-icon-btn">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <line x1="8" y1="10" x2="16" y2="10" />
-            <line x1="8" y1="14" x2="16" y2="14" />
-          </svg>
-        </button>
+      <div id="partnerAuthContainer" style="display:flex; align-items:center; gap:6px; margin-left:auto;">
+        <!-- Auth buttons injected by auth.js -->
       </div>
     </div>
   </div>
@@ -1157,15 +1112,14 @@
       }
 
       // Wire contact admin button
-      const contactAdminBtn = document.getElementById('contactAdminBtn');
-      if (contactAdminBtn) {
-        contactAdminBtn.addEventListener('click', () => {
-          alert('Contact Admin:
+    const contactAdminBtn = document.getElementById('contactAdminBtn');
+    if (contactAdminBtn) {
+      contactAdminBtn.addEventListener('click', () => {
+        alert(`Contact Admin:
 WhatsApp: +1 (555) 123-4567
-Email: admin@aviatorguru.site');
-        });
-      }
-    });
+Email: admin@aviatorguru.site`);
+      });
+    }
   </script>
   <script src="mobile-fixes.js?v=7.2"></script>
 </body>
