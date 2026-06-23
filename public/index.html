@@ -1,0 +1,1147 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Aviator Crash Game - Premium Clone">
+  <title>Aviator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Pacifico&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles_v3.css?v=7.2">
+  <link rel="stylesheet" href="castlebet2.css?v=1.0">
+  <script defer src="/js/asset-refresh.js"></script>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- PARTNER BAR (Betway-style top bar)              -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="partner-bar" id="partnerBar">
+    <div class="partner-bar-left">
+      <button class="partner-menu-btn" id="partnerMenuBtn" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+        <span class="partner-menu-label legacy-only">MENU</span>
+      </button>
+      <div class="partner-logo-wrap">
+        <img src="aviator-logo.png" alt="Partner" class="partner-logo-img" id="partnerLogo">
+      </div>
+    </div>
+    <div class="partner-bar-right">
+      <div class="legacy-elements">
+        <div class="partner-info-pill">
+          <span class="pip-label">Cash:</span>
+          <span class="pip-value" id="partnerCashDisplay">0.00</span>
+        </div>
+        <div class="partner-info-pill">
+          <span class="pip-label">Free Bet:</span>
+          <span class="pip-value">0.00</span>
+        </div>
+        <div class="partner-info-pill">
+          <span class="pip-label">Bonus:</span>
+          <span class="pip-value">0.00</span>
+        </div>
+        <button class="partner-deposit-btn" id="partnerDepositBtn">Deposit</button>
+        <button class="partner-profile-btn" id="partnerProfileBtn" aria-label="Profile">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="new-standard-elements">
+        <div class="new-profile-wrap">
+          <div class="new-profile-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#28a909" stroke-width="2">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
+            </svg>
+          </div>
+          <div class="new-profile-text">
+            <span class="new-welcome-text">Welcome</span>
+            <span class="new-username-text" id="partnerNavUsername">Player</span>
+          </div>
+        </div>
+        <button class="new-deposit-btn" id="newDepositBtn">Deposit</button>
+        <button class="new-icon-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+        </button>
+        <button class="new-icon-btn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <line x1="8" y1="10" x2="16" y2="10" />
+            <line x1="8" y1="14" x2="16" y2="14" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CASTLEBET TOP BAR (shown during game mode)      -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="castlebetTopBar">
+    <div class="cb-top-bar">
+      <div class="cb-top-bar-left">
+        <button class="cb-hamburger" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="cb-top-link">LINKS</span>
+        <span class="cb-top-link">LIVE</span>
+      </div>
+      <div class="cb-top-bar-center">
+        <span class="cb-top-logo">CASTLEBET <img src="https://flagcdn.com/16x12/na.png" alt="NA" class="cb-flag" style="margin-left:4px; border-radius:2px;"></span>
+      </div>
+      <div class="cb-top-bar-right">
+        <button class="cb-search-icon" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <span class="cb-top-link">MENU</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SECONDARY NAV (Grey)                            -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <nav class="betway-nav-primary">
+    <div class="nav-items-center legacy-nav">
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          <path d="M2 12h20" />
+        </svg>
+        <span>Sport</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        <span>Live</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
+        <span>Horse Racing</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="4" />
+          <line x1="21.17" y1="8" x2="12" y2="8" />
+          <line x1="3.95" y1="6.06" x2="8.54" y2="14" />
+        </svg>
+        <span>Casino Games</span>
+      </a>
+      <a href="#" class="nav-item active aviator-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#e50539" stroke="none">
+          <path
+            d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+        </svg>
+        <span>Aviator</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <circle cx="15.5" cy="8.5" r="1.5" />
+          <circle cx="15.5" cy="15.5" r="1.5" />
+          <circle cx="8.5" cy="15.5" r="1.5" />
+        </svg>
+        <span>Lucky Numbers</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+        </svg>
+        <span>Betgames</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="7" />
+          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+        </svg>
+        <span>Mahala Jackpot</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+        <span>Esports</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+          <line x1="7" y1="7" x2="7.01" y2="7" />
+        </svg>
+        <span>Promotions</span>
+      </a>
+    </div>
+    <div class="nav-items-center new-nav">
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span>Home</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          <path d="M2 12h20" />
+        </svg>
+        <span>Sport</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        <span>Live</span>
+      </a>
+      <a href="#" class="nav-item active aviator-item-new">
+        <svg width="22" height="22" viewBox="0 0 24 24" stroke="none">
+          <path
+            d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+        </svg>
+        <span>Aviator</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M6 12h12" />
+          <path d="M12 6v12" />
+        </svg>
+        <span>Casino</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="4" />
+          <line x1="21.17" y1="8" x2="12" y2="8" />
+          <line x1="3.95" y1="6.06" x2="8.54" y2="14" />
+        </svg>
+        <span>Live Casino</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+        </svg>
+        <span>Betgames</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <circle cx="15.5" cy="8.5" r="1.5" />
+          <circle cx="15.5" cy="15.5" r="1.5" />
+          <circle cx="8.5" cy="15.5" r="1.5" />
+        </svg>
+        <span>Lucky Numbers</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+        <span>Esports</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+          <line x1="7" y1="7" x2="7.01" y2="7" />
+        </svg>
+        <span>Promotions</span>
+      </a>
+    </div>
+    <div class="nav-icons-right">
+      <button class="nav-icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc"
+          stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,13 2,6" />
+        </svg></button>
+      <button class="nav-icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ccc"
+          stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg></button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- TERTIARY NAV (Black)                            -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <nav class="betway-nav-secondary">
+    <div class="nav-sec-left">
+      <button class="nav-back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <div class="nav-divider"></div>
+    </div>
+    <div class="nav-sec-scroll">
+      <a href="#" class="sec-item active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        <span>Featured</span>
+      </a>
+      <a href="#" class="sec-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <circle cx="15.5" cy="8.5" r="1.5" />
+          <circle cx="15.5" cy="15.5" r="1.5" />
+          <circle cx="8.5" cy="15.5" r="1.5" />
+        </svg>
+        <span>Slots</span>
+      </a>
+      <a href="#" class="sec-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg><span>First Person</span></a>
+      <a href="#" class="sec-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <circle cx="12" cy="12" r="4" />
+        </svg><span>Roulette</span></a>
+      <a href="#" class="sec-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+          <path d="M8 21h8" />
+          <path d="M12 17v4" />
+        </svg><span>Gameshows</span></a>
+      <a href="#" class="sec-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+        </svg><span>Blackjack</span></a>
+      <a href="#" class="sec-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4" />
+          <path d="M12 16h.01" />
+        </svg><span>Baccarat & Sicbo</span></a>
+      <a href="#" class="sec-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <path d="M2 12h20" />
+          <path d="M12 2v20" />
+        </svg><span>Poker</span></a>
+      <a href="#" class="sec-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2">
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg><span>Variety</span></a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- HEADER BAR                                      -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <header class="header-bar">
+    <div class="header-left">
+      <div class="header-logo-crop">
+        <img src="aviator_static_logo_transparent.png" alt="Aviator" class="header-logo-img" id="headerLogo">
+      </div>
+    </div>
+    <div class="header-right">
+      <!-- Old Deposit button (Hidden via CSS to preserve JS bindings) -->
+      <button class="deposit-btn" id="depositBtn">Deposit</button>
+
+      <!-- Dynamic Username display (synced with admin panel) -->
+      <div class="header-username legacy-only">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span id="headerUsername">Player</span>
+      </div>
+
+      <!-- Balance display (Restyled to plain text via CSS) -->
+      <div class="header-balance" id="headerBalance">
+        <span class="header-balance-amount" id="navBalanceAmount">50.00</span>
+        <span class="header-balance-currency" id="navBalanceCurrency">USD</span>
+      </div>
+
+      <!-- Grid Icon (Decorative, matches Betway) -->
+      <button class="header-icon-btn legacy-only">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+      </button>
+
+      <!-- Burger menu (Restyled to a grey box via CSS) -->
+      <div class="nav-burger-container">
+        <button class="header-icon-btn nav-burger-btn" id="burgerMenuBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <div class="burger-dropdown" id="burgerDropdown">
+          <div class="burger-item" id="withdrawBtn">
+            <span class="icon">💸</span>
+            <span>Withdraw Funds</span>
+          </div>
+          <div class="burger-item disabled">
+            <span class="icon">🛡️</span>
+            <span>Provably Fair Settings</span>
+          </div>
+          <div class="burger-item disabled">
+            <span class="icon">📜</span>
+            <span>Game Limits</span>
+          </div>
+          <div class="burger-item disabled">
+            <span class="icon">🎧</span>
+            <span>Live Support</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Nav bar removed — balance and burger are now in the header -->
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- DEPOSIT MODAL                                   -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="depositModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Deposit Funds</h3>
+        <button class="modal-close" id="depositModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="depositAmount">Amount</label>
+        <input type="number" id="depositAmount" placeholder="Enter amount" min="1">
+        <div class="deposit-quick-row">
+          <button class="deposit-quick" data-amount="100">100</button>
+          <button class="deposit-quick" data-amount="500">500</button>
+          <button class="deposit-quick" data-amount="1000">1,000</button>
+          <button class="deposit-quick" data-amount="5000">5,000</button>
+        </div>
+        <button class="deposit-confirm-btn" id="depositConfirmBtn">DEPOSIT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- WITHDRAW MODAL                                  -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="withdrawModal">
+    <div class="modal-card withdraw-card">
+      <div class="modal-header">
+        <h3 id="withdrawTitle">Select Withdrawal Method</h3>
+        <button class="modal-close" id="withdrawModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- STEP 1: SELECT SITE -->
+        <div id="withdrawStep1" class="withdraw-step">
+          <div class="withdraw-grid">
+            <div class="withdraw-site" data-site="Betway">
+              <img src="betway.svg?v=99" alt="Betway">
+              <span>Betway</span>
+            </div>
+            <div class="withdraw-site" data-site="Betpawa">
+              <img src="betpawa.svg" alt="Betpawa">
+              <span>Betpawa</span>
+            </div>
+            <div class="withdraw-site" data-site="1Win">
+              <img src="1win.svg" alt="1Win">
+              <span>1Win</span>
+            </div>
+            <div class="withdraw-site" data-site="1xBet">
+              <img src="1xbet.svg" alt="1xBet">
+              <span>1xBet</span>
+            </div>
+            <div class="withdraw-site" data-site="SportPesa">
+              <img src="sportpesa.svg" alt="SportPesa">
+              <span>SportPesa</span>
+            </div>
+            <div class="withdraw-site" data-site="Premier Bet">
+              <img src="premierbet.svg" alt="Premier Bet">
+              <span>Premier Bet</span>
+            </div>
+            <div class="withdraw-site" data-site="BetKing">
+              <img src="betking.svg" alt="BetKing">
+              <span>BetKing</span>
+            </div>
+            <div class="withdraw-site" data-site="BetWin">
+              <img src="betwin.svg" alt="BetWin">
+              <span>BetWin</span>
+            </div>
+            <div class="withdraw-site" data-site="Castlebet">
+              <img src="castlebet.png" alt="Castlebet">
+              <span>Castlebet</span>
+            </div>
+            <div class="withdraw-site" data-site="JSB Betting">
+              <img src="JSB Betting.png" alt="JSB Betting">
+              <span>JSB Betting</span>
+            </div>
+            <div class="withdraw-site" data-site="Supreme Betting">
+              <img src="supreme_betting.png" alt="Supreme Betting" style="object-fit: contain;">
+              <span>Supreme Betting</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: DETAILS FORM -->
+        <div id="withdrawStep2" class="withdraw-step" style="display:none;">
+          <div class="selected-site-bar" id="withdrawSitePreview">
+            <!-- Populated by JS -->
+          </div>
+          <div class="input-group">
+            <label>Amount (Max: <span id="withdrawMaxBal">0.00</span>)</label>
+            <input type="number" id="withdrawAmount" placeholder="Enter amount">
+          </div>
+          <div id="withdrawAmountError" style="display:none; color:#ff4444; font-size:0.8rem; min-height:18px; margin-bottom:8px;"></div>
+          <div class="input-group">
+            <label>Phone Number</label>
+            <input type="text" id="withdrawNumber" placeholder="e.g. 0712345678">
+          </div>
+          <div class="input-group">
+            <label>Account Name</label>
+            <input type="text" id="withdrawName" placeholder="Full Name">
+          </div>
+          <button class="withdraw-confirm-btn" id="withdrawConfirmBtn">WITHDRAW FUNDS</button>
+          <button class="withdraw-back-btn" id="withdrawBackBtn">Back</button>
+        </div>
+
+        <!-- STEP 6: TRANSFER PREPARATION -->
+        <div id="withdrawStep6" class="withdraw-step" style="display:none; text-align:center; padding: 20px 0;">
+          <div class="processing-spinner"></div>
+          <h4 style="margin-top:15px; color:#fff;">Preparing Secure Transfer...</h4>
+          <p style="color:var(--text-muted); font-size:0.8rem; line-height:1.5; padding:0 10px;">
+            Your withdrawal details are being verified before activation.
+          </p>
+        </div>
+
+        <!-- STEP 3: SPRIBE ACTIVATION CODE -->
+        <div id="withdrawStep3" class="withdraw-step" style="display:none; text-align:center; padding: 20px 0;">
+          <div style="font-size:2.5rem; margin-bottom:12px;">🔐</div>
+          <h4 style="color:#fff; margin-bottom:10px; font-size:1rem;">Spribe Activation Required</h4>
+          <p style="color:#f5a623; font-size:0.82rem; line-height:1.5; margin-bottom:18px; padding:0 10px;">
+            Funds are being migrated from Spribe Prediction Systems to your sports betting site. Spribe activation code needed for successful transfer.
+          </p>
+          <div class="input-group" style="text-align:left;">
+            <label>Activation Code</label>
+            <input type="text" id="withdrawActivationCode" placeholder="Enter 6-digit code" maxlength="6" style="text-align:center; letter-spacing:6px; font-size:1.3rem; font-weight:700;">
+          </div>
+          <div id="withdrawActivationError" style="color:#ff4444; font-size:0.8rem; min-height:20px; margin-bottom:8px;"></div>
+          <button class="withdraw-confirm-btn" id="withdrawActivationSubmit">SUBMIT CODE</button>
+          <button class="withdraw-back-btn" id="withdrawActivationBack">Back</button>
+        </div>
+
+        <!-- STEP 4: PROCESSING -->
+        <div id="withdrawStep4" class="withdraw-step" style="display:none; text-align:center; padding: 20px 0;">
+          <div class="processing-spinner"></div>
+          <h4 style="margin-top:15px; color:#fff;">Processing Withdrawal...</h4>
+          <p style="color:var(--text-muted); font-size:0.8rem;">Please wait while we confirm your transaction.</p>
+        </div>
+
+        <!-- STEP 5: SUCCESS -->
+        <div id="withdrawStep5" class="withdraw-step" style="display:none; text-align:center; padding: 20px 0;">
+          <div class="success-icon-lg">✓</div>
+          <h4 style="margin-top:10px; color:#fff;">Withdrawal Successful!</h4>
+          <p style="color:var(--text-muted); font-size:0.8rem;">Funds have been sent to your account.</p>
+          <button class="withdraw-confirm-btn" id="withdrawCloseBtn" style="margin-top:20px;">CLOSE</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="app-body">
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- SIDEBAR (Desktop Left)                          -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <aside class="left-sidebar" id="leftSidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-tabs">
+          <button class="sidebar-tab active" data-tab="all">All Bets</button>
+          <button class="sidebar-tab" data-tab="my">My Bets</button>
+          <button class="sidebar-tab" data-tab="top">Top</button>
+        </div>
+      </div>
+
+      <!-- Bets Summary Block -->
+      <div class="bets-summary" id="betsSummary">
+        <span class="bets-summary-count">TOTAL BETS: <strong id="totalBetsCount">0</strong></span>
+        <button class="bets-summary-prev" id="prevHandBtn">Previous hand</button>
+      </div>
+
+      <!-- Bet List Column Headers -->
+      <div class="bet-list-header">
+        <span>Player</span>
+        <span>Bet <span class="currency-label" id="betHeaderCurrency">KES</span></span>
+        <span>x</span>
+        <span>Win <span class="currency-label" id="winHeaderCurrency">KES</span></span>
+      </div>
+
+      <!-- All Bets / My Bets content -->
+      <div class="sidebar-content" id="sidebarBets">
+        <div class="bet-list" id="betList">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Top / Statistics content (hidden by default) -->
+      <div class="sidebar-content stats-panel" id="sidebarStats" style="display:none;">
+        <div class="stats-sub-tabs">
+          <button class="stats-tab active" data-period="daily">Day</button>
+          <button class="stats-tab" data-period="monthly">Month</button>
+          <button class="stats-tab" data-period="all">All Time</button>
+        </div>
+        <div class="stats-list" id="statsList">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Chat Panel -->
+      <div class="chat-panel" id="chatPanel">
+        <div class="chat-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span>Chat</span>
+          <span class="chat-online" id="chatOnline">1,247 online</span>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <!-- Dynamically populated -->
+        </div>
+        <!-- Rain Banner (hidden by default) -->
+        <div class="rain-banner" id="rainBanner" style="display:none;">
+          <div class="rain-icon">🌧️</div>
+          <div class="rain-text">
+            <strong>Aviator Rain!</strong>
+            <span id="rainAmount">50 KES</span>
+          </div>
+          <button class="rain-claim-btn" id="rainClaimBtn">CLAIM</button>
+          <div class="rain-timer" id="rainTimer"></div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." maxlength="200">
+          <button class="chat-send-btn" id="chatSendBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer: Provably Fair + SPRIBE -->
+      <div class="sidebar-footer">
+        <div class="provably-fair">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+          <span>Provably Fair Game</span>
+        </div>
+        <span class="spribe-powered">Powered by <strong>SPRIBE</strong></span>
+      </div>
+    </aside>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- MAIN GAME AREA                                  -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <main class="game-column">
+
+      <!-- History Bar Overlay -->
+      <div class="history-bar" id="historyBar">
+        <div class="history-pills" id="historyPills"></div>
+      </div>
+
+      <!-- Canvas Stage -->
+      <div class="canvas-container">
+        <div class="waiting-bar" id="waitingBar">
+          <div class="waiting-header-group">
+            <img src="ufc-logo.png" alt="UFC" class="partner-logo ufc-logo-img">
+            <div class="partner-divider"></div>
+            <img src="aviator-logo.png" alt="Aviator" class="partner-logo aviator-logo-img">
+            <div class="partner-text">
+              OFFICIAL PARTNERS
+              <div class="progress-fill" id="waitingProgress"></div>
+            </div>
+          </div>
+          <div class="spribe-badge">
+            <div class="spribe-badge-title">SPRIBE</div>
+            <div class="spribe-badge-row">
+              <span class="badge-check">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </span>
+              <span>Official Game</span>
+            </div>
+            <div class="spribe-badge-year">Since 2019</div>
+          </div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Cash-Out Celebration Popups (stacking — slot 1 on top, slot 2 below) -->
+        <div class="cashout-stack" id="cashoutStack">
+          <div class="cashout-bar" id="cashoutBar1">
+            <div class="cashout-bar-left">
+              <span class="cashout-bar-label">You have cashed out!</span>
+              <span class="cashout-bar-multiplier" id="cashoutMult1">1.42x</span>
+            </div>
+            <div class="cashout-bar-right">
+              <span class="cashout-bar-win" id="cashoutWin1">Win USD 142.00</span>
+            </div>
+            <button class="cashout-bar-close" id="cashoutClose1">&times;</button>
+          </div>
+          <div class="cashout-bar" id="cashoutBar2">
+            <div class="cashout-bar-left">
+              <span class="cashout-bar-label">You have cashed out!</span>
+              <span class="cashout-bar-multiplier" id="cashoutMult2">1.42x</span>
+            </div>
+            <div class="cashout-bar-right">
+              <span class="cashout-bar-win" id="cashoutWin2">Win USD 142.00</span>
+            </div>
+            <button class="cashout-bar-close" id="cashoutClose2">&times;</button>
+          </div>
+        </div>
+
+        <!-- Provably fair moved to sidebar footer -->
+      </div>
+
+      <!-- Betting Panels -->
+      <div class="betting-panels" id="bettingPanels">
+
+        <!-- PANEL 1 -->
+        <div class="bet-panel" id="betPanel1">
+          <div class="panel-header">
+            <div class="toggle-pill">
+              <div class="toggle-opt active" data-mode="bet" data-panel="1">Bet</div>
+              <div class="toggle-opt" data-mode="auto" data-panel="1">Auto</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- LEFT WRAPPER: Input + Presets -->
+            <div class="bet-left">
+              <div class="input-block">
+                <button class="stepper-btn minus" data-panel="1">−</button>
+                <input type="text" class="amount-input" id="betAmount1" value="10.00" data-panel="1">
+                <button class="stepper-btn plus" data-panel="1">+</button>
+              </div>
+              <div class="quick-grid">
+                <button class="quick-btn" data-amount="50" data-panel="1">50</button>
+                <button class="quick-btn" data-amount="100" data-panel="1">100</button>
+                <button class="quick-btn" data-amount="200" data-panel="1">200</button>
+                <button class="quick-btn" data-amount="500" data-panel="1">500</button>
+              </div>
+            </div>
+
+            <!-- RIGHT: Big Bet Button -->
+            <button class="main-btn btn-bet" id="betActionBtn1" data-panel="1">
+              <span class="btn-status">BET</span>
+              <span class="btn-val">10.00 USD</span>
+            </button>
+          </div>
+
+          <div class="auto-opts">
+            <label class="auto-toggle">
+              <input type="checkbox" class="auto-check" data-panel="1">
+              <div class="toggle-switch"></div>
+              <span class="toggle-label">Auto Cash Out</span>
+            </label>
+            <div class="auto-input-wrap">
+              <input type="text" class="auto-input" value="2.00" data-panel="1">
+              <span style="font-size:0.7rem; color:#9ea0a3">×</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 2 -->
+        <div class="bet-panel" id="betPanel2">
+          <div class="panel-header">
+            <div class="toggle-pill">
+              <div class="toggle-opt active" data-mode="bet" data-panel="2">Bet</div>
+              <div class="toggle-opt" data-mode="auto" data-panel="2">Auto</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- LEFT WRAPPER -->
+            <div class="bet-left">
+              <div class="input-block">
+                <button class="stepper-btn minus" data-panel="2">−</button>
+                <input type="text" class="amount-input" id="betAmount2" value="10.00" data-panel="2">
+                <button class="stepper-btn plus" data-panel="2">+</button>
+              </div>
+              <div class="quick-grid">
+                <button class="quick-btn" data-amount="50" data-panel="2">50</button>
+                <button class="quick-btn" data-amount="100" data-panel="2">100</button>
+                <button class="quick-btn" data-amount="200" data-panel="2">200</button>
+                <button class="quick-btn" data-amount="500" data-panel="2">500</button>
+              </div>
+            </div>
+
+            <!-- RIGHT -->
+            <button class="main-btn btn-bet" id="betActionBtn2" data-panel="2">
+              <span class="btn-status">BET</span>
+              <span class="btn-val">10.00 USD</span>
+            </button>
+          </div>
+
+          <div class="auto-opts">
+            <label class="auto-toggle">
+              <input type="checkbox" class="auto-check" data-panel="2">
+              <div class="toggle-switch"></div>
+              <span class="toggle-label">Auto Cash Out</span>
+            </label>
+            <div class="auto-input-wrap">
+              <input type="text" class="auto-input" value="2.00" data-panel="2">
+              <span style="font-size:0.7rem; color:#9ea0a3">×</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CASTLEBET OVERLAYS (hidden by default)          -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- SCREEN 1: Country Selector -->
+  <div id="castlebetCountryScreen" class="castlebet-overlay">
+    <div class="cb-country-banner">
+      <div class="cb-logo-text">CASTLEBET</div>
+      <button class="cb-about-btn">ABOUT US</button>
+    </div>
+    <div class="cb-country-section">
+      <h2>Select your country</h2>
+      <div class="cb-country-grid">
+        <div class="cb-country-card expanded" data-country="zambia">
+          <div class="cb-country-flag">🇿🇲</div>
+          <div class="cb-country-name">Zambia</div>
+          <div class="cb-card-buttons">
+            <button class="cb-card-btn">Castlebet VIP</button>
+            <button class="cb-card-btn">Castlebet Lite</button>
+            <button class="cb-card-btn">USSD</button>
+          </div>
+        </div>
+        <div class="cb-country-card" data-country="namibia">
+          <div class="cb-country-flag">🇳🇦</div>
+          <div class="cb-country-name">Namibia</div>
+        </div>
+        <div class="cb-country-card" data-country="congo">
+          <div class="cb-country-flag">🇨🇬</div>
+          <div class="cb-country-name">Republic of Congo</div>
+        </div>
+        <div class="cb-country-card" data-country="drcongo">
+          <div class="cb-country-flag">🇨🇩</div>
+          <div class="cb-country-name">DR Congo</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: Homepage (Not Logged In) -->
+  <div id="castlebetHomepageScreen" class="castlebet-overlay">
+    <!-- Top Bar -->
+    <div class="cb-top-bar" style="position:relative;">
+      <div class="cb-top-bar-left">
+        <button class="cb-hamburger" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="cb-top-link">LINKS</span>
+        <span class="cb-top-link" style="color:#ef4444;">LIVE</span>
+      </div>
+      <div class="cb-top-bar-center">
+        <span class="cb-top-logo">CASTLEBET <span class="cb-flag">🇳🇦</span></span>
+      </div>
+      <div class="cb-top-bar-right">
+        <button class="cb-search-icon" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <span class="cb-top-link">MENU</span>
+        <span class="cb-badge">0</span>
+      </div>
+    </div>
+
+    <!-- Action Bar (Not Logged In) -->
+    <div class="cb-action-bar" id="cbActionBarGuest">
+      <button class="cb-join-btn">JOIN NOW</button>
+      <button class="cb-login-btn" id="cbHomepageLoginBtn">LOG IN</button>
+    </div>
+
+    <!-- Action Bar (Logged In — hidden initially) -->
+    <div class="cb-action-bar-loggedin" id="cbActionBarLoggedIn">
+      <div class="cb-loggedin-left">My Bets</div>
+      <div class="cb-loggedin-center">
+        <span id="cbLoggedInUser">814437964</span>
+        <span>Wallets ▾</span>
+      </div>
+      <div class="cb-loggedin-right">
+        <button class="cb-deposit-btn">Deposit</button>
+      </div>
+    </div>
+
+    <!-- Category Nav -->
+    <nav class="cb-category-nav">
+      <a class="cb-category-item" href="#">
+        <span class="cb-cat-icon">⚽</span>
+        <span>Football</span>
+      </a>
+      <a class="cb-category-item" href="#">
+        <span class="cb-cat-icon">📺</span>
+        <span>Live</span>
+      </a>
+      <a class="cb-category-item" href="#">
+        <span class="cb-cat-icon">🎱</span>
+        <span>Lucky Numbers</span>
+      </a>
+      <a class="cb-category-item" href="#">
+        <span class="cb-cat-icon">🎰</span>
+        <span>Casino</span>
+      </a>
+      <a class="cb-category-item" href="#">
+        <span class="cb-cat-icon">🃏</span>
+        <span>Live Casino</span>
+      </a>
+      <a class="cb-category-item active" href="#" id="cbAviatorNavItem">
+        <span class="cb-cat-icon">✈️</span>
+        <span>Aviator</span>
+      </a>
+      <a class="cb-category-item" href="#">
+        <span class="cb-cat-icon">🏀</span>
+        <span>Other Sports</span>
+      </a>
+    </nav>
+
+    <!-- Homepage Content -->
+    <div class="cb-homepage-content">
+      <!-- Banner Area -->
+      <div class="cb-banner-area">
+        <div class="cb-banner-slide">
+          <h2>🎉 Welcome to Castlebet</h2>
+          <p>Your #1 sports betting destination in Namibia</p>
+        </div>
+        <div class="cb-banner-dots">
+          <div class="cb-banner-dot active"></div>
+          <div class="cb-banner-dot"></div>
+          <div class="cb-banner-dot"></div>
+        </div>
+      </div>
+
+      <!-- Odds Boost -->
+      <div class="cb-odds-boost">
+        <span class="cb-odds-boost-icon">🔥</span>
+        <span class="cb-odds-boost-text">ODDS BOOST — BIGGEST ODDS IN AFRICA</span>
+        <span class="cb-odds-boost-sub">View All ›</span>
+      </div>
+
+      <!-- Match Listings -->
+      <div class="cb-matches-section">
+        <div class="cb-matches-header">
+          <h3>⚽ Popular Matches</h3>
+        </div>
+
+        <div class="cb-match-card">
+          <div class="cb-match-header">
+            <span class="cb-match-live-dot"></span>
+            <span>Premier League • Today 20:00</span>
+          </div>
+          <div class="cb-match-teams">
+            <span class="cb-match-team">Manchester United</span>
+            <span class="cb-match-vs">vs</span>
+            <span class="cb-match-team">Chelsea FC</span>
+          </div>
+          <div class="cb-match-odds">
+            <div class="cb-odd-btn"><span class="cb-odd-label">1</span><span class="cb-odd-value">2.45</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">X</span><span class="cb-odd-value">3.20</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">2</span><span class="cb-odd-value">2.95</span></div>
+          </div>
+        </div>
+
+        <div class="cb-match-card">
+          <div class="cb-match-header">
+            <span>La Liga • Today 21:30</span>
+          </div>
+          <div class="cb-match-teams">
+            <span class="cb-match-team">Real Madrid</span>
+            <span class="cb-match-vs">vs</span>
+            <span class="cb-match-team">FC Barcelona</span>
+          </div>
+          <div class="cb-match-odds">
+            <div class="cb-odd-btn"><span class="cb-odd-label">1</span><span class="cb-odd-value">1.85</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">X</span><span class="cb-odd-value">3.50</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">2</span><span class="cb-odd-value">4.10</span></div>
+          </div>
+        </div>
+
+        <div class="cb-match-card">
+          <div class="cb-match-header">
+            <span>Serie A • Tomorrow 18:00</span>
+          </div>
+          <div class="cb-match-teams">
+            <span class="cb-match-team">AC Milan</span>
+            <span class="cb-match-vs">vs</span>
+            <span class="cb-match-team">Inter Milan</span>
+          </div>
+          <div class="cb-match-odds">
+            <div class="cb-odd-btn"><span class="cb-odd-label">1</span><span class="cb-odd-value">2.10</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">X</span><span class="cb-odd-value">3.30</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">2</span><span class="cb-odd-value">3.40</span></div>
+          </div>
+        </div>
+
+        <div class="cb-match-card">
+          <div class="cb-match-header">
+            <span>Bundesliga • Tomorrow 19:30</span>
+          </div>
+          <div class="cb-match-teams">
+            <span class="cb-match-team">Bayern Munich</span>
+            <span class="cb-match-vs">vs</span>
+            <span class="cb-match-team">Dortmund</span>
+          </div>
+          <div class="cb-match-odds">
+            <div class="cb-odd-btn"><span class="cb-odd-label">1</span><span class="cb-odd-value">1.55</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">X</span><span class="cb-odd-value">4.20</span></div>
+            <div class="cb-odd-btn"><span class="cb-odd-label">2</span><span class="cb-odd-value">5.50</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Betslip Button -->
+    <button class="cb-betslip-btn">🎫 BETSLIP <span>0</span></button>
+  </div>
+
+  <!-- SCREEN 3: Login -->
+  <div id="castlebetLoginScreen" class="castlebet-overlay">
+    <!-- Top Bar -->
+    <div class="cb-top-bar" style="position:relative;">
+      <div class="cb-top-bar-left">
+        <button class="cb-hamburger" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="cb-top-link">LINKS</span>
+        <span class="cb-top-link" style="color:#ef4444;">LIVE</span>
+      </div>
+      <div class="cb-top-bar-center">
+        <span class="cb-top-logo">CASTLEBET <span class="cb-flag">🇳🇦</span></span>
+      </div>
+      <div class="cb-top-bar-right">
+        <button class="cb-search-icon" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <span class="cb-top-link">MENU</span>
+        <span class="cb-badge">0</span>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="cb-action-bar">
+      <button class="cb-join-btn">JOIN NOW</button>
+      <button class="cb-login-btn">LOG IN</button>
+    </div>
+
+    <!-- Category Nav -->
+    <nav class="cb-category-nav">
+      <a class="cb-category-item" href="#"><span class="cb-cat-icon">⚽</span><span>Football</span></a>
+      <a class="cb-category-item" href="#"><span class="cb-cat-icon">📺</span><span>Live</span></a>
+      <a class="cb-category-item" href="#"><span class="cb-cat-icon">🎱</span><span>Lucky Numbers</span></a>
+      <a class="cb-category-item" href="#"><span class="cb-cat-icon">🎰</span><span>Casino</span></a>
+      <a class="cb-category-item" href="#"><span class="cb-cat-icon">🃏</span><span>Live Casino</span></a>
+      <a class="cb-category-item active" href="#"><span class="cb-cat-icon">✈️</span><span>Aviator</span></a>
+      <a class="cb-category-item" href="#"><span class="cb-cat-icon">🏀</span><span>Other Sports</span></a>
+    </nav>
+
+    <!-- Login Content -->
+    <div class="cb-login-content">
+      <!-- Breadcrumb -->
+      <div class="cb-breadcrumb">
+        <a href="#">🏠</a>
+        <span>/</span>
+        <span>Log in</span>
+      </div>
+
+      <!-- Login Form -->
+      <div class="cb-login-form">
+        <div class="cb-form-group">
+          <label>Mobile Phone Number / Username</label>
+          <input type="text" id="cbLoginUsername" placeholder="Username / Mobile Number (081/085)">
+        </div>
+        <div class="cb-form-group">
+          <label>PIN / Password</label>
+          <input type="password" id="cbLoginPassword" placeholder="Enter PIN / Password (eg: 4321)">
+          <button class="cb-eye-icon" type="button" aria-label="Show password">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <button class="cb-login-submit" id="cbLoginSubmitBtn">LOG IN</button>
+        <button class="cb-login-join">JOIN NOW</button>
+        <div class="cb-lost-password">
+          <a href="#">Lost Password?</a>
+        </div>
+      </div>
+
+      <!-- Footer Links -->
+      <div class="cb-login-footer">
+        <a href="#">Join now</a><span>|</span>
+        <a href="#">Log in</a><span>|</span>
+        <a href="#">About us</a><span>|</span>
+        <a href="#">Terms & Conditions</a><span>|</span>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Loading Overlay -->
+  <div class="cb-login-loading" id="cbLoginLoading">
+    <div class="cb-login-spinner"></div>
+    <p>Logging in...</p>
+  </div>
+
+  <script src="bets.js?v=7.2"></script>
+  <script src="canvas.js?v=7.2"></script>
+  <script src="game.js?v=7.2"></script>
+  <script src="chat.js?v=7.2"></script>
+  <script src="sounds.js?v=7.2"></script>
+  <script src="ui.js?v=7.2"></script>
+  <script src="client-sync.js?v=8.0"></script>
+  <script src="auth.js?v=9.0"></script>
+  <script src="main.js?v=9.0"></script>
+  <script src="mobile-fixes.js?v=7.2"></script>
+</body>
+
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviator Admin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0e17;
+      color: #fff;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .header h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: #e50539;
+      text-transform: uppercase;
+    }
+    .header p {
+      font-size: 0.75rem;
+      color: #5e6266;
+      margin-top: 4px;
+    }
+    .card {
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(180deg, #141c28, #0e1621);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 0.8rem;
+      color: #9ea0a3;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .game-state-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .game-state-label {
+      font-size: 0.8rem;
+      color: #5e6266;
+    }
+    .game-state-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.05);
+    }
+    .game-state-value.waiting { color: #f5a623; }
+    .game-state-value.flying { color: #e50539; }
+    .game-state-value.crashed { color: #ef4444; }
+    .game-state-value.cooldown { color: #3b82f6; }
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 0.75rem;
+      color: #9ea0a3;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.3rem;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-group input:focus {
+      border-color: #e50539;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+    .btn-primary {
+      background: linear-gradient(180deg, #e50539, #b0042d);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(229,5,57,0.3);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      color: #9ea0a3;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+    .next-round-info {
+      background: rgba(40, 169, 9, 0.08);
+      border: 1px solid rgba(40, 169, 9, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .next-round-info .label {
+      font-size: 0.7rem;
+      color: #9ea0a3;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .next-round-info .value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #28a909;
+    }
+    .log-section {
+      width: 100%;
+      max-width: 440px;
+    }
+    .log-title {
+      font-size: 0.75rem;
+      color: #5e6266;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .log-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+    }
+    .log-entry .time { color: #5e6266; font-size: 0.7rem; }
+    .log-entry .round { color: #9ea0a3; font-weight: 600; }
+    .log-entry .mult { font-weight: 800; color: #fff; }
+    .log-entry .mult.admin { color: #f5a623; }
+    .log-entry .mult.actual { color: #41b0ee; }
+    .conn-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      padding: 12px;
+      background: rgba(0,0,0,0.8);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: #5e6266;
+    }
+    .conn-bar.connected { color: #28a909; }
+    .conn-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #5e6266;
+    }
+    .conn-bar.connected .conn-dot { background: #28a909; }
+  </style>
+<base target="_blank">
+</head>
+<body>
+  <div class="header">
+    <h1>Aviator Admin</h1>
+    <p>Manual Round Control</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Game Status</div>
+    <div class="game-state-row">
+      <span class="game-state-label">Current State</span>
+      <span class="game-state-value" id="gameStateValue">--</span>
+    </div>
+    <div class="game-state-row">
+      <span class="game-state-label">Current Round</span>
+      <span class="game-state-value" id="currentRound">--</span>
+    </div>
+    <div class="game-state-row">
+      <span class="game-state-label">Live Multiplier</span>
+      <span class="game-state-value" id="liveMultiplier">--</span>
+    </div>
+  </div>
+
+  <div class="next-round-info" id="nextRoundInfo" style="display:none;">
+    <div class="label">Next Round Set To</div>
+    <div class="value" id="nextRoundValue">--</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Set Next Round</div>
+    <div class="input-group">
+      <label>Crash Multiplier (e.g. 2.50, 15.00, 1.05)</label>
+      <input type="number" id="multiplierInput" step="0.01" min="1.00" placeholder="Enter multiplier" value="2.00">
+    </div>
+    <button class="btn btn-primary" id="setBtn">Set Next Round</button>
+    <button class="btn btn-secondary" id="randomBtn">Auto Generate Random</button>
+  </div>
+
+  <div class="log-section">
+    <div class="log-title">Action Log</div>
+    <div id="logList"></div>
+  </div>
+
+  <div class="conn-bar" id="connBar">
+    <span class="conn-dot"></span>
+    <span id="connText">Waiting for game connection...</span>
+  </div>
+
+  <script>
+    const channel = new BroadcastChannel('aviator_game_channel');
+    const els = {
+      gameStateValue: document.getElementById('gameStateValue'),
+      currentRound: document.getElementById('currentRound'),
+      liveMultiplier: document.getElementById('liveMultiplier'),
+      nextRoundInfo: document.getElementById('nextRoundInfo'),
+      nextRoundValue: document.getElementById('nextRoundValue'),
+      multiplierInput: document.getElementById('multiplierInput'),
+      setBtn: document.getElementById('setBtn'),
+      randomBtn: document.getElementById('randomBtn'),
+      logList: document.getElementById('logList'),
+      connBar: document.getElementById('connBar'),
+      connText: document.getElementById('connText')
+    };
+
+    let currentRound = 0;
+    let nextSetValue = null;
+    let nextSetRound = null;
+    let logs = [];
+    let connected = false;
+
+    function addLog(text, round, type) {
+      const time = new Date().toLocaleTimeString();
+      logs.unshift({ time, text, round, type });
+      if (logs.length > 15) logs.pop();
+      renderLogs();
+    }
+
+    function renderLogs() {
+      els.logList.innerHTML = logs.map(l => {
+        const typeClass = l.type === 'admin' ? 'admin' : (l.type === 'actual' ? 'actual' : '');
+        return `<div class="log-entry">
+          <span class="time">${l.time}</span>
+          <span class="round">${l.round ? 'Round #' + l.round : ''}</span>
+          <span class="mult ${typeClass}">${l.text}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function updateGameState(state, round, multiplier) {
+      currentRound = round || currentRound;
+      els.gameStateValue.textContent = state.toUpperCase();
+      els.gameStateValue.className = 'game-state-value ' + state;
+      els.currentRound.textContent = currentRound > 0 ? '#' + currentRound : '--';
+      els.liveMultiplier.textContent = multiplier ? multiplier.toFixed(2) + 'x' : '--';
+      if (!connected) {
+        connected = true;
+        els.connBar.classList.add('connected');
+        els.connText.textContent = 'Connected to game';
+      }
+    }
+
+    function showNextSet(value, round) {
+      nextSetValue = value;
+      nextSetRound = round;
+      els.nextRoundInfo.style.display = 'block';
+      els.nextRoundValue.textContent = value.toFixed(2) + 'x';
+    }
+
+    function generateRandom() {
+      const r = Math.random();
+      let val;
+      if (r < 0.35) val = 1.00 + Math.random() * 1.50;
+      else if (r < 0.65) val = 2.50 + Math.random() * 4.00;
+      else if (r < 0.85) val = 7.00 + Math.random() * 8.00;
+      else val = 15.00 + Math.random() * 85.00;
+      return parseFloat(val.toFixed(2));
+    }
+
+    els.setBtn.addEventListener('click', () => {
+      const val = parseFloat(els.multiplierInput.value);
+      if (isNaN(val) || val < 1.00) {
+        alert('Enter a valid multiplier (minimum 1.00)');
+        return;
+      }
+      const targetRound = currentRound + 1;
+      channel.postMessage({
+        type: 'NEXT_CRASH_POINT',
+        data: { crashPoint: val, round: targetRound }
+      });
+      showNextSet(val, targetRound);
+      addLog('SET ' + val.toFixed(2) + 'x', targetRound, 'admin');
+      console.log('[Admin] Set round', targetRound, 'to', val.toFixed(2) + 'x');
+    });
+
+    els.randomBtn.addEventListener('click', () => {
+      const val = generateRandom();
+      els.multiplierInput.value = val.toFixed(2);
+      const targetRound = currentRound + 1;
+      channel.postMessage({
+        type: 'NEXT_CRASH_POINT',
+        data: { crashPoint: val, round: targetRound }
+      });
+      showNextSet(val, targetRound);
+      addLog('AUTO ' + val.toFixed(2) + 'x', targetRound, 'admin');
+    });
+
+    channel.onmessage = (e) => {
+      const { type, data } = e.data || {};
+      if (!type) return;
+
+      if (type === 'GAME_STATE') {
+        updateGameState(data.state, data.round, data.multiplier);
+      }
+
+      if (type === 'ROUND_COMPLETE') {
+        if (data && data.crashPoint && data.round) {
+          addLog('CRASH ' + data.crashPoint.toFixed(2) + 'x', data.round, 'actual');
+          // Clear the "next set" display if it was for this round
+          if (nextSetRound === data.round) {
+            nextSetValue = null;
+            nextSetRound = null;
+            els.nextRoundInfo.style.display = 'none';
+          }
+        }
+      }
+
+      if (type === 'FLYING_WITH') {
+        if (data && data.crashPoint && data.round) {
+          addLog('FLYING @ ' + data.crashPoint.toFixed(2) + 'x', data.round, 'actual');
+        }
+      }
+
+      if (type === 'PREDICTION_UPDATE') {
+        if (data && data.source === 'admin') {
+          showNextSet(data.crashPoint, data.round);
+        }
+      }
+    };
+
+    // Ping game tab periodically
+    setInterval(() => {
+      channel.postMessage({ type: 'PING_ADMIN', data: { timestamp: Date.now() } });
+    }, 3000);
+  </script>
+</body>
+</html>

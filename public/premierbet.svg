@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 40">
+  <style>
+    .text { font-family: Arial, sans-serif; font-weight: 900; font-style: italic; }
+  </style>
+  <text x="5" y="30" class="text" fill="#007D3E" font-size="26">Premier Bet</text>
+</svg>

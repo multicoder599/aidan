@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40">
+  <style>
+    .text { font-family: Arial, sans-serif; font-weight: 900; }
+  </style>
+  <text x="5" y="30" class="text" fill="#162053" font-size="28">SportPesa</text>
+</svg>

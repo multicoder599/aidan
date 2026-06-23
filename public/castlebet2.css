@@ -1,0 +1,1756 @@
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   CASTLEBET 2 â€” Full Skin CSS
+   All styles scoped to body.castlebet-mode
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+
+   /* â”€â”€ Castlebet Design Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   :root {
+       --cb-blue: #0ea5e9;
+       --cb-blue-dark: #0284c7;
+       --cb-blue-deeper: #0369a1;
+       --cb-gold: #f5a623;
+       --cb-gold-hover: #e8960e;
+       --cb-dark: #1a1a1e;
+       --cb-dark-alt: #111114;
+       --cb-green: #22c55e;
+       --cb-green-hover: #16a34a;
+       --cb-grey-bg: #f0f0f0;
+       --cb-text-light: #ffffff;
+       --cb-text-dark: #1a1a1e;
+       --cb-border: rgba(255,255,255,0.1);
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      SHARED OVERLAY BASE STYLES
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   .castlebet-overlay {
+       display: none;
+       position: fixed;
+       top: 0; left: 0; right: 0; bottom: 0;
+       z-index: 9000;
+       overflow-y: auto;
+       overflow-x: hidden;
+       -webkit-overflow-scrolling: touch;
+   }
+   
+   .castlebet-overlay.active {
+       display: flex;
+       flex-direction: column;
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      SCREEN 1: COUNTRY SELECTOR
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   #castlebetCountryScreen {
+       background: linear-gradient(180deg, var(--cb-blue) 0%, var(--cb-blue) 45%, var(--cb-grey-bg) 45%, var(--cb-grey-bg) 100%);
+   }
+   
+   .cb-country-banner {
+       padding: 50px 20px 60px;
+       text-align: center;
+       position: relative;
+   }
+   
+   .cb-country-banner .cb-logo-text {
+       font-family: 'Oswald', 'Impact', sans-serif;
+       font-size: 3.5rem;
+       font-weight: 700;
+       color: #fff;
+       letter-spacing: 4px;
+       text-transform: uppercase;
+       margin-bottom: 20px;
+       text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+   }
+   
+   .cb-about-btn {
+       display: inline-block;
+       padding: 10px 40px;
+       background: var(--cb-blue-dark);
+       color: #fff;
+       border: 2px solid #fff;
+       border-radius: 6px;
+       font-size: 0.85rem;
+       font-weight: 600;
+       letter-spacing: 2px;
+       text-transform: uppercase;
+       cursor: pointer;
+       transition: all 0.2s;
+   }
+   
+   .cb-about-btn:hover {
+       background: #fff;
+       color: var(--cb-blue-dark);
+   }
+   
+   .cb-country-section {
+       padding: 30px 20px 60px;
+       text-align: center;
+   }
+   
+   .cb-country-section h2 {
+       font-family: 'Oswald', sans-serif;
+       font-size: 1.4rem;
+       color: var(--cb-text-dark);
+       margin-bottom: 30px;
+       font-weight: 600;
+   }
+   
+   .cb-country-grid {
+       display: flex;
+       justify-content: center;
+       gap: 16px;
+       flex-wrap: wrap;
+       max-width: 800px;
+       margin: 0 auto;
+   }
+   
+   .cb-country-card {
+       background: #fff;
+       border-radius: 12px;
+       padding: 24px 20px;
+       min-width: 140px;
+       max-width: 180px;
+       flex: 1;
+       text-align: center;
+       cursor: pointer;
+       box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+       transition: all 0.25s ease;
+       border: 2px solid transparent;
+   }
+   
+   .cb-country-card:hover {
+       transform: translateY(-4px);
+       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+       border-color: var(--cb-blue);
+   }
+   
+   .cb-country-card.active {
+       border-color: var(--cb-blue);
+       box-shadow: 0 8px 24px rgba(14,165,233,0.2);
+   }
+   
+   .cb-country-flag {
+       width: 60px;
+       height: 60px;
+       border-radius: 50%;
+       margin: 0 auto 12px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-size: 2.2rem;
+       background: #f5f5f5;
+       overflow: hidden;
+   }
+   
+   .cb-country-name {
+       font-family: 'Oswald', sans-serif;
+       font-size: 0.85rem;
+       font-weight: 600;
+       color: var(--cb-text-dark);
+       text-transform: uppercase;
+       letter-spacing: 1px;
+   }
+   
+   /* Zambia expanded card */
+   .cb-country-card.expanded {
+       padding-bottom: 16px;
+   }
+   
+   .cb-country-card.expanded .cb-card-buttons {
+       display: flex;
+       flex-direction: column;
+       gap: 6px;
+       margin-top: 12px;
+   }
+   
+   .cb-card-buttons {
+       display: none;
+   }
+   
+   .cb-card-btn {
+       padding: 6px 12px;
+       background: var(--cb-blue);
+       color: #fff;
+       border: none;
+       border-radius: 4px;
+       font-size: 0.7rem;
+       font-weight: 600;
+       cursor: pointer;
+       transition: background 0.2s;
+   }
+   
+   .cb-card-btn:hover {
+       background: var(--cb-blue-dark);
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      CASTLEBET TOP BAR (Shared by Homepage, Login, Game screens)
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   .cb-top-bar {
+       display: flex;
+       align-items: center;
+       justify-content: space-between;
+       background: var(--cb-dark);
+       height: 45px;
+       padding: 0 12px;
+       flex-shrink: 0;
+       z-index: 100;
+   }
+   
+   .cb-top-bar-left {
+       display: flex;
+       align-items: center;
+       gap: 12px;
+   }
+   
+   .cb-top-bar-center {
+       display: flex;
+       align-items: center;
+       gap: 6px;
+       position: absolute;
+       left: 50%;
+       transform: translateX(-50%);
+   }
+   
+   .cb-top-bar-right {
+       display: flex;
+       align-items: center;
+       gap: 12px;
+   }
+   
+   .cb-top-link {
+       color: #fff;
+       font-size: 0.65rem;
+       font-weight: 600;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       opacity: 0.8;
+       transition: opacity 0.2s;
+       text-decoration: none;
+       white-space: nowrap;
+   }
+   
+   .cb-top-link:hover {
+       opacity: 1;
+   }
+   
+   .cb-top-logo {
+       font-family: 'Oswald', 'Impact', sans-serif;
+       font-size: 1.2rem;
+       font-weight: 700;
+       color: #fff;
+       letter-spacing: 2px;
+       text-transform: uppercase;
+       display: flex;
+       align-items: center;
+       gap: 6px;
+   }
+   
+   .cb-top-logo .cb-flag {
+       font-size: 1rem;
+   }
+   
+   .cb-hamburger {
+       background: none;
+       border: none;
+       color: #fff;
+       cursor: pointer;
+       padding: 4px;
+       display: flex;
+       align-items: center;
+   }
+   
+   .cb-hamburger svg {
+       width: 20px;
+       height: 20px;
+   }
+   
+   .cb-search-icon {
+       background: none;
+       border: none;
+       color: #fff;
+       cursor: pointer;
+       padding: 4px;
+       display: flex;
+       align-items: center;
+       opacity: 0.8;
+   }
+   
+   .cb-search-icon:hover {
+       opacity: 1;
+   }
+   
+   .cb-badge {
+       background: var(--cb-blue);
+       color: #fff;
+       font-size: 0.65rem;
+       font-weight: 700;
+       padding: 2px 6px;
+       border-radius: 10px;
+       min-width: 18px;
+       text-align: center;
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      ACTION BAR (JOIN NOW / LOG IN or My Bets / Wallets / Deposit)
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   .cb-action-bar {
+       display: flex;
+       height: 42px;
+       flex-shrink: 0;
+   }
+   
+   .cb-action-bar .cb-join-btn {
+       flex: 1;
+       background: var(--cb-gold);
+       color: var(--cb-text-dark);
+       border: none;
+       font-family: 'Oswald', sans-serif;
+       font-size: 0.9rem;
+       font-weight: 700;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       transition: background 0.2s;
+   }
+   
+   .cb-action-bar .cb-join-btn:hover {
+       background: var(--cb-gold-hover);
+   }
+   
+   .cb-action-bar .cb-login-btn {
+       flex: 1;
+       background: var(--cb-blue);
+       color: #fff;
+       border: none;
+       font-family: 'Oswald', sans-serif;
+       font-size: 0.9rem;
+       font-weight: 700;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       transition: background 0.2s;
+   }
+   
+   .cb-action-bar .cb-login-btn:hover {
+       background: var(--cb-blue-dark);
+   }
+   
+   /* Logged-in bar */
+   .cb-action-bar-loggedin {
+       display: none;
+       height: 42px;
+       align-items: center;
+       justify-content: space-between;
+       background: var(--cb-dark-alt);
+       padding: 0 12px;
+       flex-shrink: 0;
+   }
+   
+   .cb-action-bar-loggedin.active {
+       display: flex;
+   }
+   
+   .cb-loggedin-left {
+       color: #fff;
+       font-size: 0.75rem;
+       font-weight: 600;
+       opacity: 0.8;
+   }
+   
+   .cb-loggedin-center {
+       display: flex;
+       align-items: center;
+       gap: 8px;
+       color: #fff;
+       font-size: 0.8rem;
+       font-weight: 600;
+   }
+   
+   .cb-loggedin-right .cb-deposit-btn {
+       background: var(--cb-green);
+       color: #fff;
+       border: none;
+       padding: 6px 16px;
+       border-radius: 4px;
+       font-family: 'Oswald', sans-serif;
+       font-size: 0.75rem;
+       font-weight: 600;
+       text-transform: uppercase;
+       cursor: pointer;
+       transition: background 0.2s;
+   }
+   
+   .cb-loggedin-right .cb-deposit-btn:hover {
+       background: var(--cb-green-hover);
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      CATEGORY NAV BAR
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   .cb-category-nav {
+       display: flex;
+       background: var(--cb-blue);
+       height: 56px;
+       overflow-x: auto;
+       flex-shrink: 0;
+       -webkit-overflow-scrolling: touch;
+       scrollbar-width: none;
+   }
+   
+   .cb-category-nav::-webkit-scrollbar {
+       display: none;
+   }
+   
+   .cb-category-item {
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       gap: 4px;
+       padding: 6px 14px;
+       color: rgba(255,255,255,0.8);
+       font-size: 0.6rem;
+       font-weight: 600;
+       text-transform: uppercase;
+       letter-spacing: 0.5px;
+       white-space: nowrap;
+       cursor: pointer;
+       transition: all 0.2s;
+       border-bottom: 2px solid transparent;
+       text-decoration: none;
+       min-width: 70px;
+       flex-shrink: 0;
+   }
+   
+   .cb-category-item:hover,
+   .cb-category-item.active {
+       color: #fff;
+       border-bottom-color: #fff;
+       background: rgba(255,255,255,0.1);
+   }
+   
+   .cb-category-item svg {
+       width: 18px;
+       height: 18px;
+       fill: currentColor;
+       stroke: none;
+   }
+   
+   .cb-category-item .cb-cat-icon {
+       font-size: 1.1rem;
+       line-height: 1;
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      SCREEN 2: HOMEPAGE
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   #castlebetHomepageScreen {
+       background: #f5f5f5;
+   }
+   
+   .cb-homepage-content {
+       flex: 1;
+       overflow-y: auto;
+   }
+   
+   /* Banner carousel */
+   .cb-banner-area {
+       width: 100%;
+       background: linear-gradient(135deg, #0369a1, #0ea5e9);
+       min-height: 160px;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       position: relative;
+       overflow: hidden;
+   }
+   
+   .cb-banner-slide {
+       text-align: center;
+       padding: 30px 20px;
+       color: #fff;
+   }
+   
+   .cb-banner-slide h2 {
+       font-family: 'Oswald', sans-serif;
+       font-size: 1.8rem;
+       font-weight: 700;
+       margin-bottom: 8px;
+       text-transform: uppercase;
+   }
+   
+   .cb-banner-slide p {
+       font-size: 0.9rem;
+       opacity: 0.9;
+   }
+   
+   .cb-banner-dots {
+       position: absolute;
+       bottom: 10px;
+       left: 50%;
+       transform: translateX(-50%);
+       display: flex;
+       gap: 6px;
+   }
+   
+   .cb-banner-dot {
+       width: 8px;
+       height: 8px;
+       border-radius: 50%;
+       background: rgba(255,255,255,0.4);
+   }
+   
+   .cb-banner-dot.active {
+       background: #fff;
+   }
+   
+   /* Odds Boost section */
+   .cb-odds-boost {
+       background: linear-gradient(90deg, var(--cb-blue-deeper), var(--cb-blue));
+       padding: 12px 16px;
+       display: flex;
+       align-items: center;
+       gap: 10px;
+   }
+   
+   .cb-odds-boost-icon {
+       font-size: 1.5rem;
+   }
+   
+   .cb-odds-boost-text {
+       color: #fff;
+       font-family: 'Oswald', sans-serif;
+       font-size: 0.85rem;
+       font-weight: 600;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+   }
+   
+   .cb-odds-boost-sub {
+       color: rgba(255,255,255,0.8);
+       font-size: 0.7rem;
+       margin-left: auto;
+       font-weight: 600;
+   }
+   
+   /* Match listings */
+   .cb-matches-section {
+       padding: 16px;
+   }
+   
+   .cb-matches-header {
+       display: flex;
+       align-items: center;
+       justify-content: space-between;
+       margin-bottom: 12px;
+       padding: 0 4px;
+   }
+   
+   .cb-matches-header h3 {
+       font-family: 'Oswald', sans-serif;
+       font-size: 0.9rem;
+       font-weight: 600;
+       color: var(--cb-text-dark);
+       text-transform: uppercase;
+   }
+   
+   .cb-match-card {
+       background: #fff;
+       border-radius: 8px;
+       padding: 14px;
+       margin-bottom: 10px;
+       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+   }
+   
+   .cb-match-header {
+       display: flex;
+       align-items: center;
+       gap: 6px;
+       margin-bottom: 10px;
+       font-size: 0.7rem;
+       color: #666;
+   }
+   
+   .cb-match-live-dot {
+       width: 6px;
+       height: 6px;
+       border-radius: 50%;
+       background: #ef4444;
+       animation: pulse 1.5s infinite;
+   }
+   
+   .cb-match-teams {
+       display: flex;
+       align-items: center;
+       justify-content: space-between;
+       margin-bottom: 10px;
+   }
+   
+   .cb-match-team {
+       font-size: 0.8rem;
+       font-weight: 600;
+       color: var(--cb-text-dark);
+       flex: 1;
+   }
+   
+   .cb-match-team:last-child {
+       text-align: right;
+   }
+   
+   .cb-match-vs {
+       font-size: 0.7rem;
+       color: #999;
+       padding: 0 8px;
+   }
+   
+   .cb-match-odds {
+       display: flex;
+       gap: 8px;
+   }
+   
+   .cb-odd-btn {
+       flex: 1;
+       padding: 8px;
+       background: #f0f0f0;
+       border: 1px solid #e0e0e0;
+       border-radius: 4px;
+       text-align: center;
+       cursor: pointer;
+       transition: all 0.2s;
+   }
+   
+   .cb-odd-btn:hover {
+       background: var(--cb-blue);
+       color: #fff;
+       border-color: var(--cb-blue);
+   }
+   
+   .cb-odd-label {
+       display: block;
+       font-size: 0.6rem;
+       color: #999;
+       margin-bottom: 2px;
+   }
+   
+   .cb-odd-value {
+       font-size: 0.85rem;
+       font-weight: 700;
+       color: var(--cb-text-dark);
+   }
+   
+   .cb-odd-btn:hover .cb-odd-value,
+   .cb-odd-btn:hover .cb-odd-label {
+       color: #fff;
+   }
+   
+   /* Betslip button */
+   .cb-betslip-btn {
+       position: fixed;
+       bottom: 16px;
+       right: 16px;
+       background: var(--cb-green);
+       color: #fff;
+       border: none;
+       padding: 10px 20px;
+       border-radius: 8px;
+       font-family: 'Oswald', sans-serif;
+       font-size: 0.8rem;
+       font-weight: 600;
+       text-transform: uppercase;
+       display: flex;
+       align-items: center;
+       gap: 8px;
+       cursor: pointer;
+       box-shadow: 0 4px 12px rgba(34,197,94,0.4);
+       z-index: 9050;
+       transition: all 0.2s;
+   }
+   
+   .cb-betslip-btn:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 6px 16px rgba(34,197,94,0.5);
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      SCREEN 3: LOGIN
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   #castlebetLoginScreen {
+       background: #f5f5f5;
+   }
+   
+   .cb-login-content {
+       flex: 1;
+       overflow-y: auto;
+   }
+   
+   .cb-breadcrumb {
+       display: flex;
+       align-items: center;
+       gap: 6px;
+       padding: 12px 16px;
+       font-size: 0.75rem;
+       color: #666;
+       background: #fff;
+       border-bottom: 1px solid #eee;
+   }
+   
+   .cb-breadcrumb a {
+       color: var(--cb-blue);
+       text-decoration: none;
+   }
+   
+   .cb-login-form {
+       padding: 20px 16px;
+       background: #fff;
+       margin: 16px;
+       border-radius: 8px;
+       box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+   }
+   
+   .cb-form-group {
+       margin-bottom: 16px;
+       position: relative;
+   }
+   
+   .cb-form-group label {
+       position: absolute;
+       top: -8px;
+       left: 12px;
+       background: #fff;
+       padding: 0 6px;
+       font-size: 0.7rem;
+       color: #666;
+       text-transform: none;
+       letter-spacing: 0;
+       font-weight: 500;
+   }
+   
+   .cb-form-group input {
+       width: 100%;
+       padding: 14px 12px;
+       border: 1px solid #ddd;
+       border-radius: 6px;
+       font-size: 0.9rem;
+       color: var(--cb-text-dark);
+       background: #fff;
+       transition: border-color 0.2s;
+       font-family: 'Inter', sans-serif;
+   }
+   
+   .cb-form-group input:focus {
+       outline: none;
+       border-color: var(--cb-blue);
+   }
+   
+   .cb-form-group input::placeholder {
+       color: #bbb;
+       font-size: 0.8rem;
+   }
+   
+   .cb-form-group .cb-eye-icon {
+       position: absolute;
+       right: 12px;
+       top: 50%;
+       transform: translateY(-50%);
+       background: none;
+       border: none;
+       color: #999;
+       cursor: pointer;
+       padding: 4px;
+   }
+   
+   .cb-login-submit {
+       width: 100%;
+       padding: 14px;
+       background: var(--cb-gold);
+       color: var(--cb-text-dark);
+       border: none;
+       border-radius: 6px;
+       font-family: 'Oswald', sans-serif;
+       font-size: 1rem;
+       font-weight: 700;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       transition: background 0.2s;
+       margin-bottom: 10px;
+   }
+   
+   .cb-login-submit:hover {
+       background: var(--cb-gold-hover);
+   }
+   
+   .cb-login-join {
+       width: 100%;
+       padding: 14px;
+       background: var(--cb-dark);
+       color: #fff;
+       border: none;
+       border-radius: 6px;
+       font-family: 'Oswald', sans-serif;
+       font-size: 1rem;
+       font-weight: 700;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       transition: background 0.2s;
+       margin-bottom: 12px;
+   }
+   
+   .cb-login-join:hover {
+       background: #333;
+   }
+   
+   .cb-lost-password {
+       text-align: center;
+       margin-top: 8px;
+   }
+   
+   .cb-lost-password a {
+       color: var(--cb-blue);
+       text-decoration: none;
+       font-size: 0.8rem;
+       font-weight: 500;
+   }
+   
+   .cb-login-footer {
+       padding: 20px 16px;
+       text-align: center;
+       display: flex;
+       flex-wrap: wrap;
+       justify-content: center;
+       gap: 8px;
+   }
+   
+   .cb-login-footer a {
+       color: var(--cb-blue);
+       text-decoration: none;
+       font-size: 0.75rem;
+       font-weight: 500;
+       white-space: nowrap;
+   }
+   
+   .cb-login-footer span {
+       color: #ccc;
+       font-size: 0.75rem;
+   }
+   
+   /* Login loading overlay */
+   .cb-login-loading {
+       display: none;
+       position: fixed;
+       top: 0; left: 0; right: 0; bottom: 0;
+       background: rgba(0,0,0,0.7);
+       z-index: 9100;
+       align-items: center;
+       justify-content: center;
+       flex-direction: column;
+       gap: 16px;
+   }
+   
+   .cb-login-loading.active {
+       display: flex;
+   }
+   
+   .cb-login-spinner {
+       width: 40px;
+       height: 40px;
+       border: 4px solid rgba(255,255,255,0.2);
+       border-top-color: var(--cb-blue);
+       border-radius: 50%;
+       animation: cbSpin 0.8s linear infinite;
+   }
+   
+   @keyframes cbSpin {
+       to { transform: rotate(360deg); }
+   }
+   
+   .cb-login-loading p {
+       color: #fff;
+       font-size: 0.9rem;
+       font-weight: 500;
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      CASTLEBET TOP BAR â€” Persistent during game
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   #castlebetTopBar {
+       display: none;
+   }
+   
+   body.castlebet-mode.castlebet-game-active #castlebetTopBar {
+       display: block;
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      GAME MODE OVERRIDES
+      When castlebet-mode + castlebet-game-active are both on body
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   /* Hide default Betway partner bar and nav bars */
+   body.castlebet-mode.castlebet-game-active .partner-bar,
+   body.castlebet-mode.castlebet-game-active .betway-nav-primary,
+   body.castlebet-mode.castlebet-game-active .betway-nav-secondary {
+       display: none !important;
+   }
+   
+   /* Aviator header override â€” Castlebet style */
+   body.castlebet-mode.castlebet-game-active .header-bar {
+       background: var(--cb-dark) !important;
+       border-bottom: 1px solid rgba(255,255,255,0.08);
+   }
+   
+   /* Green bet buttons */
+   body.castlebet-mode.castlebet-game-active .main-btn.btn-bet {
+       background: var(--cb-green) !important;
+       box-shadow: 0 4px 12px rgba(34,197,94,0.3) !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .main-btn.btn-bet:hover {
+       background: var(--cb-green-hover) !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .main-btn.btn-cashout {
+       background: var(--cb-gold) !important;
+       color: var(--cb-text-dark) !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .main-btn.btn-cashout:hover {
+       background: var(--cb-gold-hover) !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .main-btn.btn-cashout .btn-status,
+   body.castlebet-mode.castlebet-game-active .main-btn.btn-cashout .btn-val {
+       color: var(--cb-text-dark) !important;
+   }
+   
+   /* Quick amount override â€” 2, 4, 6, 8 */
+   body.castlebet-mode.castlebet-game-active .quick-btn {
+       border-color: rgba(34,197,94,0.3);
+   }
+   
+   body.castlebet-mode.castlebet-game-active .quick-btn:hover {
+       background: rgba(34,197,94,0.15);
+       border-color: rgba(34,197,94,0.5);
+   }
+   
+   /* Balance display green for Castlebet */
+   body.castlebet-mode.castlebet-game-active .header-balance-amount {
+       color: var(--cb-green) !important;
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      RESPONSIVE
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   @media (max-width: 768px) {
+       .cb-country-banner .cb-logo-text {
+           font-size: 2.5rem;
+       }
+   
+       .cb-country-grid {
+           gap: 10px;
+       }
+   
+       .cb-country-card {
+           min-width: 110px;
+           padding: 16px 12px;
+       }
+   
+       .cb-country-flag {
+           width: 48px;
+           height: 48px;
+           font-size: 1.8rem;
+       }
+   
+       .cb-top-bar {
+           height: 40px;
+           padding: 0 8px;
+       }
+   
+       .cb-top-logo {
+           font-size: 1rem;
+       }
+   
+       .cb-category-item {
+           padding: 6px 10px;
+           min-width: 60px;
+       }
+   
+       .cb-banner-area {
+           min-height: 130px;
+       }
+   
+       .cb-banner-slide h2 {
+           font-size: 1.3rem;
+       }
+   }
+   
+   @media (max-width: 480px) {
+       .cb-country-grid {
+           flex-direction: column;
+           align-items: center;
+       }
+   
+       .cb-country-card {
+           max-width: 240px;
+           width: 100%;
+       }
+   
+       .cb-top-bar-center {
+           position: static;
+           transform: none;
+       }
+   
+       .cb-top-bar {
+           justify-content: space-between;
+       }
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      ANIMATIONS
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   @keyframes cbFadeIn {
+       from { opacity: 0; }
+       to { opacity: 1; }
+   }
+   
+   @keyframes cbSlideUp {
+       from { opacity: 0; transform: translateY(20px); }
+       to { opacity: 1; transform: translateY(0); }
+   }
+   
+   .castlebet-overlay.active {
+       animation: cbFadeIn 0.3s ease;
+   }
+   
+   .cb-country-card {
+       animation: cbSlideUp 0.4s ease backwards;
+   }
+   
+   .cb-country-card:nth-child(1) { animation-delay: 0.1s; }
+   .cb-country-card:nth-child(2) { animation-delay: 0.2s; }
+   .cb-country-card:nth-child(3) { animation-delay: 0.3s; }
+   .cb-country-card:nth-child(4) { animation-delay: 0.4s; }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      CASTLEBET GAME UI REFINEMENTS (MATCH SCREENSHOT 1)
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   /* Sidebar "My Bets" -> "Previous" */
+   body.castlebet-mode.castlebet-game-active [data-tab="my"] {
+       font-size: 0 !important;
+       color: transparent !important;
+   }
+   body.castlebet-mode.castlebet-game-active [data-tab="my"]::after {
+       content: "Previous";
+       font-size: 12px;
+       color: #b7b7b7;
+       text-transform: capitalize;
+   }
+   
+   /* Hide auto cash out toggle completely when on Bet tab */
+   body.castlebet-mode.castlebet-game-active .bet-panel .auto-opts {
+       display: none !important;
+   }
+   body.castlebet-mode.castlebet-game-active .bet-panel.auto-bet-active .auto-opts {
+       display: flex !important;
+   }
+   
+   /* Adjust toggle pill to be a unified dark container */
+   body.castlebet-mode.castlebet-game-active .panel-header {
+       background: transparent !important;
+   }
+   body.castlebet-mode.castlebet-game-active .toggle-pill {
+       background: #0f1012 !important;
+       border-radius: 20px !important;
+       padding: 2px !important;
+       display: inline-flex !important;
+       border: 1px solid rgba(255,255,255,0.05);
+   }
+   body.castlebet-mode.castlebet-game-active .toggle-opt {
+       background: transparent !important;
+       color: #888 !important;
+       border-radius: 18px !important;
+       text-transform: capitalize !important;
+       box-shadow: none !important;
+       font-size: 13px !important;
+   }
+   body.castlebet-mode.castlebet-game-active .toggle-opt.active {
+       background: #2b2b2b !important;
+       color: #fff !important;
+   }
+   
+   /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      STANDALONE CASTLEBET GAME SCREEN â€” screenshot-accurate shell
+      â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   
+   body.castlebet-mode.castlebet-game-active {
+       --cb-game-top: 40px;
+       --cb-aviator-top: 45px;
+       --cb-left-width: 410px;
+       --cb-right-width: 350px;
+       background: #111;
+       overflow: hidden;
+   }
+   
+   body.castlebet-mode.castlebet-game-active > .castlebet-top-bar {
+       height: var(--cb-game-top);
+       padding: 0 76px;
+       background: #2d2d2d;
+       border-bottom: 1px solid #1b1b1b;
+       color: #f4f4f4;
+       font-size: 12px;
+       letter-spacing: 0;
+       position: relative;
+       z-index: 500;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .castlebet-logo {
+       height: 18px;
+       filter: brightness(1.3) contrast(1.1);
+   }
+   
+   body.castlebet-mode.castlebet-game-active .castlebet-logo-text {
+       color: #fff;
+       font-family: Arial, Helvetica, sans-serif;
+       font-size: 17px;
+       font-weight: 900;
+       letter-spacing: -1px;
+       line-height: 1;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .castlebet-logo-flag {
+       display: inline-block;
+       margin-left: 4px;
+       font-size: 18px;
+       transform: translateY(2px);
+   }
+   
+   body.castlebet-mode.castlebet-game-active .castlebet-top-bar .top-bar-center {
+       gap: 320px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .castlebet-top-bar .top-link {
+       color: #f3f3f3;
+       font-weight: 500;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .castlebet-top-bar .search-btn svg {
+       width: 24px;
+       height: 24px;
+       stroke-width: 2.6;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .header-bar.castlebet-header-override {
+       height: var(--cb-aviator-top) !important;
+       padding: 0 74px !important;
+       background: #181818 !important;
+       border-bottom: 4px solid #101010 !important;
+       box-shadow: none !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .header-logo-img {
+       height: 28px !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .header-right {
+       gap: 12px !important;
+       margin-right: 0 !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .header-balance {
+       color: #29e430 !important;
+       font-size: 16px !important;
+       padding: 0 !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .header-balance-amount {
+       color: #2aea34 !important;
+       font-weight: 800 !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .header-balance-currency {
+       color: #9ca3af !important;
+       font-weight: 500 !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .app-body {
+       height: calc(100vh - var(--cb-game-top) - var(--cb-aviator-top));
+       min-height: 0;
+       background: #101010;
+       padding: 0 var(--cb-right-width) 0 0;
+       gap: 0;
+       overflow: hidden;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .left-sidebar {
+       width: var(--cb-left-width) !important;
+       background: #1b1b1b !important;
+       border: 5px solid #101010 !important;
+       border-radius: 18px 18px 0 0;
+       backdrop-filter: none !important;
+       overflow: hidden;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .sidebar-header {
+       padding: 7px 8px 6px !important;
+       background: #141414 !important;
+       border-bottom: 0 !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .sidebar-tabs {
+       height: 25px;
+       padding: 0;
+       background: #101010;
+       border-radius: 15px;
+       overflow: hidden;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .sidebar-tab {
+       padding: 0;
+       border: 0;
+       background: transparent !important;
+       color: #b7b7b7;
+       font-size: 12px;
+       font-weight: 500;
+       text-transform: none;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .sidebar-tab.active {
+       background: #303136 !important;
+       color: #fff;
+       box-shadow: none;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .bets-summary {
+       display: grid;
+       grid-template-columns: auto 1fr auto;
+       gap: 8px;
+       align-items: center;
+       margin: 0 8px 8px;
+       padding: 8px 10px;
+       min-height: 58px;
+       background: #202020;
+       border: 0;
+       border-radius: 0 0 10px 10px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-bets-avatars {
+       display: flex;
+       align-items: center;
+       width: 58px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-bets-avatars span {
+       width: 24px;
+       height: 24px;
+       margin-right: -9px;
+       border: 2px solid #242424;
+       border-radius: 50%;
+       display: grid;
+       place-items: center;
+       background: #111;
+       font-size: 15px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-bets-count {
+       align-self: end;
+       color: #b4b4b4;
+       font-size: 12px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-bets-count strong {
+       color: #fff;
+       font-weight: 400;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-bets-win {
+       display: flex;
+       flex-direction: column;
+       align-items: flex-end;
+       gap: 3px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-bets-win strong {
+       color: #e8edf3;
+       font-size: 18px;
+       line-height: 1;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-bets-win span {
+       color: #8a8a8a;
+       font-size: 12px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .bet-list-header {
+       grid-template-columns: minmax(0, 1.5fr) 90px 35px 80px !important;
+       padding: 8px 12px;
+       background: #1b1b1b;
+       color: #777;
+       font-size: 10px;
+       letter-spacing: 0;
+       text-transform: none;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .sidebar-content {
+       min-height: 0;
+       overflow: hidden;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .bet-list {
+       padding: 0 7px 4px;
+       overflow-y: auto;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .bet-row {
+       grid-template-columns: minmax(0, 1.5fr) 90px 35px 80px !important;
+       min-height: 33px;
+       margin-bottom: 3px;
+       padding: 4px 8px !important;
+       background: #111;
+       border: 0;
+       border-radius: 18px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .avatar {
+       width: 26px;
+       height: 26px;
+       font-size: 11px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .username,
+   body.castlebet-mode.castlebet-game-active .bet-val,
+   body.castlebet-mode.castlebet-game-active .mult-val,
+   body.castlebet-mode.castlebet-game-active .win-val {
+       color: #b7b7b7;
+       font-size: 12px;
+       font-weight: 500;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .sidebar-footer {
+       height: 28px;
+       padding: 0 10px;
+       background: #202020;
+       border-top: 1px solid #242424;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .game-column {
+       min-width: 0;
+       background: #101010;
+       overflow: hidden;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .history-bar {
+       position: relative;
+       height: 34px;
+       padding: 0 8px 0 14px;
+       background: #101010;
+       justify-content: flex-start;
+       flex-shrink: 0;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .history-pills {
+       flex-direction: row;
+       gap: 15px;
+       padding: 0;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .history-pill {
+       padding: 0;
+       background: transparent !important;
+       border-radius: 0;
+       font-size: 12px;
+       font-weight: 500;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .canvas-container {
+       flex: 1 1 auto;
+       min-height: 0;
+       margin: 0 8px;
+       border: 1px solid #2f3032;
+       border-radius: 18px 18px 0 0;
+       background:
+           repeating-conic-gradient(from 252deg at 0 100%, rgba(255,255,255,0.055) 0deg 5deg, rgba(0,0,0,0) 5deg 15deg),
+           #050505;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .canvas-container::after {
+       content: "";
+       position: absolute;
+       inset: 0;
+       pointer-events: none;
+       background: radial-gradient(circle at 50% 100%, transparent 0 42%, rgba(0,0,0,0.3) 68%, rgba(0,0,0,0.72) 100%);
+       z-index: 2;
+   }
+   
+   body.castlebet-mode.castlebet-game-active #gameCanvas {
+       position: relative;
+       z-index: 1;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .waiting-bar,
+   body.castlebet-mode.castlebet-game-active .spribe-badge {
+       display: none !important;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .betting-panels {
+       flex: 0 0 188px;
+       gap: 5px;
+       padding: 0 8px 0;
+       background: #101010;
+       min-width: 0;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .bet-panel {
+       max-width: none;
+       min-width: 0;
+       padding: 12px 84px 18px;
+       background: #181818;
+       border: 0;
+       border-radius: 18px;
+       justify-content: center;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .toggle-pill {
+       width: 205px !important;
+       height: 27px;
+       margin: 0 auto 8px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .panel-body {
+       gap: 10px;
+       align-items: center;
+       min-width: 0;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .bet-left {
+       width: 140px;
+       flex: 0 0 140px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .input-block {
+       height: 31px;
+       background: transparent;
+       border: 0;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .amount-input {
+       color: #9b9b9b;
+       font-size: 18px;
+       font-weight: 800;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .stepper-btn {
+       width: 27px;
+       height: 27px;
+       border-radius: 50%;
+       background: #232323;
+       color: #6f6f6f;
+       border: 0;
+       font-size: 18px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .quick-grid {
+       grid-template-columns: repeat(2, 1fr);
+       gap: 4px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .quick-btn {
+       height: 23px;
+       background: #111;
+       border: 0;
+       color: #5f5f5f;
+       border-radius: 14px;
+       font-size: 14px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .main-btn.btn-bet {
+       height: 80px;
+       max-width: 214px;
+       min-width: 0;
+       border: 1px solid rgba(128, 255, 106, 0.35);
+       border-radius: 9px;
+       background: #17660d !important;
+       box-shadow: none !important;
+       color: #99a199;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .main-btn .btn-status {
+       font-size: 22px;
+       color: #9ea39e;
+       text-transform: none;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .main-btn .btn-val {
+       color: #9ea39e;
+       font-size: 22px;
+       font-weight: 500;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-panel {
+       position: fixed;
+       top: calc(var(--cb-game-top) + var(--cb-aviator-top));
+       right: 0;
+       bottom: 0;
+       width: var(--cb-right-width);
+       height: auto;
+       min-height: 0;
+       background: #1d1d1d;
+       border: 0;
+       z-index: 450;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-header {
+       height: 58px;
+       padding: 0 12px;
+       background: #252525;
+       border: 1px solid #373737;
+       border-radius: 19px 0 0 19px;
+       color: #8f8f8f;
+       font-size: 14px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .cb-chat-info,
+   body.castlebet-mode.castlebet-game-active .cb-chat-close {
+       width: 36px;
+       height: 36px;
+       border-radius: 50%;
+       display: grid;
+       place-items: center;
+       background: #313131;
+       color: #8f8f8f;
+       border: 0;
+       font-size: 21px;
+       font-weight: 700;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-online {
+       margin-left: auto;
+       color: #8f8f8f;
+       font-size: 14px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-online strong {
+       color: #26f24b;
+       font-size: 16px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-messages {
+       padding: 8px 0;
+       background: #1d1d1d;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-msg {
+       display: grid;
+       grid-template-columns: 40px minmax(0, 1fr) 28px;
+       gap: 10px;
+       padding: 4px 8px 4px 10px;
+       color: #e8e8e8;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-avatar {
+       width: 36px;
+       height: 36px;
+       border-radius: 50%;
+       font-size: 13px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-msg-content {
+       background: #282828;
+       border-radius: 0 13px 13px 13px;
+       padding: 8px 10px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-meta-row {
+       margin-bottom: 3px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-name {
+       color: #28f061 !important;
+       font-size: 12px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-time {
+       color: #747474;
+       font-size: 11px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-text {
+       color: #f0f0f0;
+       font-size: 14px;
+       line-height: 1.35;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-msg-likes {
+       color: #595959;
+       align-self: center;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-input-row {
+       height: 88px;
+       padding: 10px 8px 14px;
+       background: #1d1d1d;
+       border-top: 1px solid #242424;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-input {
+       height: 50px;
+       border-radius: 15px;
+       border-color: #3a3a3a;
+       background: #2a2a2a;
+       color: #d8d8d8;
+       font-size: 14px;
+   }
+   
+   body.castlebet-mode.castlebet-game-active .chat-send-btn {
+       width: 42px;
+       color: #777;
+   }
+   
+   @media (max-width: 1500px) {
+       body.castlebet-mode.castlebet-game-active {
+           --cb-left-width: 360px;
+           --cb-right-width: 300px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .bet-panel {
+           padding: 12px 30px 16px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .bet-left {
+           width: 128px;
+           flex-basis: 128px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .main-btn.btn-bet,
+       body.castlebet-mode.castlebet-game-active .main-btn.btn-cashout {
+           max-width: none;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .main-btn .btn-status,
+       body.castlebet-mode.castlebet-game-active .main-btn .btn-val {
+           font-size: 18px;
+       }
+   }
+   
+   @media (max-width: 1200px) {
+       body.castlebet-mode.castlebet-game-active {
+           --cb-left-width: 320px;
+           --cb-right-width: 260px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .bet-panel {
+           padding-left: 14px;
+           padding-right: 14px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .bet-left {
+           width: 118px;
+           flex-basis: 118px;
+       }
+   
+   }
+   
+   @media (max-width: 1100px) {
+       body.castlebet-mode.castlebet-game-active {
+           --cb-left-width: 300px;
+           --cb-right-width: 0px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .app-body {
+           padding-right: 0;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .chat-panel {
+           display: none !important;
+       }
+   }
+   
+   @media (max-width: 768px) {
+       body.castlebet-mode.castlebet-game-active {
+           position: fixed;
+           width: 100%;
+           height: 100%;
+           overflow: hidden;
+           --cb-left-width: 0px;
+           --cb-right-width: 0px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .app-body {
+           width: 100%;
+           height: calc(100vh - var(--cb-game-top) - var(--cb-aviator-top));
+           padding: 0;
+           display: flex;
+           flex-direction: column;
+           overflow-x: hidden;
+           overflow-y: auto;
+           -webkit-overflow-scrolling: touch;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .left-sidebar,
+       body.castlebet-mode.castlebet-game-active .chat-panel {
+           display: none !important;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .game-column {
+           width: 100%;
+           min-height: 100%;
+           flex: 1 0 auto;
+           overflow: visible;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .history-bar {
+           height: 34px;
+           overflow-x: auto;
+           scrollbar-width: none;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .history-bar::-webkit-scrollbar {
+           display: none;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .canvas-container {
+           width: calc(100% - 16px);
+           min-height: 240px;
+           max-height: 42vh;
+           flex: 0 0 auto;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .betting-panels {
+           flex: 0 0 auto;
+           flex-direction: column;
+           gap: 8px;
+           padding: 8px 8px calc(12px + env(safe-area-inset-bottom));
+       }
+   
+       body.castlebet-mode.castlebet-game-active .bet-panel {
+           width: 100%;
+           padding: 10px 12px 12px;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .toggle-pill {
+           width: min(205px, 100%) !important;
+       }
+   
+       body.castlebet-mode.castlebet-game-active .main-btn.btn-bet,
+       body.castlebet-mode.castlebet-game-active .main-btn.btn-cashout {
+           width: 100%;
+           max-width: none;
+           min-height: 64px !important;
+           height: 64px;
+       }
+   }
