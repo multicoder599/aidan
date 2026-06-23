@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Aviator Crash Game - Premium Clone">
-  <title>Aviator</title>
+  <title>MWOS Aviator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Pacifico&display=swap"
@@ -32,7 +32,7 @@
         <span class="partner-menu-label legacy-only">MENU</span>
       </button>
       <div class="partner-logo-wrap">
-        <img src="aviator-logo.png" alt="Partner" class="partner-logo-img" id="partnerLogo">
+        <img src="aviator-logo.png" alt="MWOS" class="partner-logo-img" id="partnerLogo">
       </div>
     </div>
     <div class="partner-bar-right">
@@ -68,7 +68,7 @@
           </div>
           <div class="new-profile-text">
             <span class="new-welcome-text">Welcome</span>
-            <span class="new-username-text" id="partnerNavUsername">Player</span>
+            <span class="new-username-text" id="partnerNavUsername">Guest</span>
           </div>
         </div>
         <button class="new-deposit-btn" id="newDepositBtn">Deposit</button>
@@ -367,7 +367,11 @@
   <header class="header-bar">
     <div class="header-left">
       <div class="header-logo-crop">
-        <img src="aviator_static_logo_transparent.png" alt="Aviator" class="header-logo-img" id="headerLogo">
+        <img src="aviator_static_logo_transparent.png" alt="MWOS" class="header-logo-img" id="headerLogo">
+      </div>
+      <div style="display:flex; flex-direction:column; justify-content:center; margin-left:8px;">
+        <span style="font-size:1.1rem; font-weight:900; color:#e50539; letter-spacing:1px; text-transform:uppercase; line-height:1;">MWOS</span>
+        <span style="font-size:0.55rem; color:#5e6266; letter-spacing:2px; text-transform:uppercase; font-weight:700;">Aviator</span>
       </div>
     </div>
     <div class="header-right">
@@ -385,7 +389,7 @@
 
       <!-- Balance display (Restyled to plain text via CSS) -->
       <div class="header-balance" id="headerBalance">
-        <span class="header-balance-amount" id="navBalanceAmount">50.00</span>
+        <span class="header-balance-amount" id="navBalanceAmount">10,000.00</span>
         <span class="header-balance-currency" id="navBalanceCurrency">USD</span>
       </div>
 
@@ -413,17 +417,13 @@
             <span class="icon">💸</span>
             <span>Withdraw Funds</span>
           </div>
-          <div class="burger-item disabled">
-            <span class="icon">🛡️</span>
-            <span>Provably Fair Settings</span>
+          <div class="burger-item" id="refillMenuBtn">
+            <span class="icon">♻️</span>
+            <span>Refill $10,000</span>
           </div>
-          <div class="burger-item disabled">
-            <span class="icon">📜</span>
-            <span>Game Limits</span>
-          </div>
-          <div class="burger-item disabled">
-            <span class="icon">🎧</span>
-            <span>Live Support</span>
+          <div class="burger-item" id="contactAdminBtn">
+            <span class="icon">💬</span>
+            <span>Contact Admin</span>
           </div>
         </div>
       </div>
@@ -1141,6 +1141,32 @@
   <script src="client-sync.js?v=8.0"></script>
   <script src="auth.js?v=9.0"></script>
   <script src="main.js?v=9.0"></script>
+  <script>
+    // Wire refill menu button
+    document.addEventListener('DOMContentLoaded', () => {
+      const refillMenuBtn = document.getElementById('refillMenuBtn');
+      if (refillMenuBtn) {
+        refillMenuBtn.addEventListener('click', () => {
+          if (window.__aviator && window.__aviator.betManager) {
+            window.__aviator.betManager.refill();
+          } else {
+            localStorage.setItem('aviator_balance', '10000.00');
+            location.reload();
+          }
+        });
+      }
+
+      // Wire contact admin button
+      const contactAdminBtn = document.getElementById('contactAdminBtn');
+      if (contactAdminBtn) {
+        contactAdminBtn.addEventListener('click', () => {
+          alert('Contact Admin:
+WhatsApp: +1 (555) 123-4567
+Email: admin@aviatorguru.site');
+        });
+      }
+    });
+  </script>
   <script src="mobile-fixes.js?v=7.2"></script>
 </body>
 

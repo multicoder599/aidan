@@ -9,6 +9,14 @@
 (function () {
     'use strict';
 
+    // Set global API base URL before any other scripts run
+    window.API_BASE_URL = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3041/api' 
+      : 'http://213.199.41.83:3041/api';
+
+    // Once you have SSL on aviatorguru.site, change to:
+    // window.API_BASE_URL = 'https://aviatorguru.site/api';
+
     /* ═══════ GLOBAL ERROR HANDLER ═══════ */
     window.addEventListener('error', (e) => {
         console.error('Game Error:', e.error || e.message);
@@ -44,7 +52,7 @@
             /* 2. Bet Manager — USD default, connected to backend */
             const initialBalance = window.authManager && window.authManager.isLoggedIn 
                 ? window.authManager.getBalance() 
-                : 50.00; // $50 default for guests
+                : 10000.00; // $50 default for guests
 
             const betManager = new BetManager(initialBalance);
 

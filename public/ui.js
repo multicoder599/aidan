@@ -995,7 +995,15 @@ class UIController {
         const { depositBtn, depositModal, depositModalClose, depositAmount, depositConfirmBtn } = this.els;
 
         if (depositBtn && depositModal) {
-            depositBtn.addEventListener('click', () => depositModal.classList.add('active'));
+            depositBtn.addEventListener('click', () => {
+                // Check if user is logged in
+                if (window.authManager && window.authManager.isLoggedIn) {
+                    // Show admin contact modal instead
+                    this._showAdminDepositModal();
+                } else {
+                    depositModal.classList.add('active');
+                }
+            });
         }
         if (depositModalClose && depositModal) {
             depositModalClose.addEventListener('click', () => depositModal.classList.remove('active'));
@@ -1007,14 +1015,14 @@ class UIController {
             });
         }
 
-        // Quick amount buttons
+        // Quick amount buttons (for guest mode)
         document.querySelectorAll('.deposit-quick').forEach(btn => {
             btn.addEventListener('click', () => {
                 if (depositAmount) depositAmount.value = btn.dataset.amount;
             });
         });
 
-        // Confirm deposit
+        // Confirm deposit (guest mode only - adds to local balance)
         if (depositConfirmBtn) {
             depositConfirmBtn.addEventListener('click', () => {
                 const val = parseFloat(depositAmount?.value);
@@ -1025,6 +1033,50 @@ class UIController {
                 }
             });
         }
+    }
+
+    /** Show admin contact modal for logged-in deposits */
+    _showAdminDepositModal() {
+        let adminModal = document.getElementById('adminDepositModal');
+        if (!adminModal) {
+            adminModal = document.createElement('div');
+            adminModal.id = 'adminDepositModal';
+            adminModal.className = 'modal-overlay';
+            adminModal.innerHTML = `
+                <div class="modal-card" style="max-width:400px; text-align:center;">
+                    <div class="modal-header">
+                        <h3>Deposit Funds</h3>
+                        <button class="modal-close" id="adminDepositClose">&times;</button>
+                    </div>
+                    <div class="modal-body" style="padding:30px 20px;">
+                        <div style="font-size:3rem; margin-bottom:16px;">💬</div>
+                        <h4 style="color:#fff; margin-bottom:12px; font-size:1.1rem;">Contact Admin for Deposits</h4>
+                        <p style="color:#9ea0a3; font-size:0.85rem; line-height:1.6; margin-bottom:20px;">
+                            All deposits are processed manually by our admin team. Please reach out via the contact details below to add funds to your account.
+                        </p>
+                        <div style="background:rgba(255,255,255,0.05); border-radius:10px; padding:16px; margin-bottom:20px; border:1px solid rgba(255,255,255,0.08);">
+                            <div style="font-size:0.8rem; color:#5e6266; margin-bottom:4px;">WhatsApp / Telegram</div>
+                            <div style="font-size:1rem; color:#fff; font-weight:700;">+1 (555) 123-4567</div>
+                            <div style="font-size:0.8rem; color:#5e6266; margin-top:8px; margin-bottom:4px;">Email</div>
+                            <div style="font-size:0.95rem; color:#41b0ee; font-weight:600;">admin@aviatorguru.site</div>
+                        </div>
+                        <button id="adminDepositDone" style="width:100%; padding:12px; background:linear-gradient(180deg, #e50539, #b0042d); border:none; border-radius:10px; color:#fff; font-weight:800; font-size:0.9rem; cursor:pointer;">CLOSE</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(adminModal);
+
+            document.getElementById('adminDepositClose').addEventListener('click', () => {
+                adminModal.classList.remove('active');
+            });
+            document.getElementById('adminDepositDone').addEventListener('click', () => {
+                adminModal.classList.remove('active');
+            });
+            adminModal.addEventListener('click', (e) => {
+                if (e.target === adminModal) adminModal.classList.remove('active');
+            });
+        }
+        adminModal.classList.add('active');
     }
 
     /** @private Initialise withdraw modal interactions */

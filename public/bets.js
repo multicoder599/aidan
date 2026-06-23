@@ -15,7 +15,7 @@ class BetManager {
     /**
      * @param {number} initialBalance - Starting player balance in KES
      */
-    constructor(initialBalance = 50.00) {
+    constructor(initialBalance = 10000.00) {
       /** @type {number} Minimum allowed bet */
       this.MIN_BET = 10;
   
@@ -94,7 +94,7 @@ class BetManager {
   
         // Forced v4 migration: unconditionally reset balance to 1297094.41 once for ALL users
         if (currentSite !== 'interbet' && !localStorage.getItem('aviator_migrated_v4')) {
-          savedBalance = '50.00';
+          savedBalance = '10000.00';
           localStorage.setItem('aviator_balance', savedBalance);
           localStorage.setItem('aviator_migrated_v4', 'true');
           localStorage.removeItem('aviator_withdraw_step');
@@ -105,11 +105,11 @@ class BetManager {
         // SSR balance (defaultBalance) is used only when there is no localStorage entry.
         this.balance = savedBalance !== null ? parseFloat(savedBalance) : (defaultBalance || 1297094.41);
   
-        this.currency = savedCurrency || 'USD';
+        this.currency = 'USD';
         this.username = savedUsername || 'Guest';
       } catch (err) {
         console.warn('Failed to load from localStorage:', err);
-        this.balance = defaultBalance || 50.00;
+        this.balance = defaultBalance || 10000.00;
         this.currency = 'KES';
         this.username = 'Player';
       }

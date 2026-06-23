@@ -5,8 +5,9 @@
  * ═══════════════════════════════════════════════
  */
 
-// Frontend: https://aviatorpros.surge.sh
+// Frontend: https://aviatorpros.surge.sh (or aviatorguru.site)
 // Backend: VPS on port 3041
+// CHANGE THIS to your domain once SSL is ready: 'https://aviatorguru.site/api'
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:3041/api' 
   : 'http://213.199.41.83:3041/api';
@@ -171,6 +172,7 @@ class AuthManager {
 }
 
 // Global instance
+window.API_BASE_URL = API_BASE_URL;
 window.authManager = new AuthManager();
 
 // Initialize auth UI when DOM is ready
@@ -472,11 +474,35 @@ function updateAuthUI(isLoggedIn, user) {
     if (partnerNavUsername) partnerNavUsername.textContent = user.username;
 
   } else {
-    // Show login/register buttons - FORCE VISIBLE
+    // GUEST: Show login/register + refill, hide deposit
     authContainer.innerHTML = `
+      <button id="refillBtn" style="background:linear-gradient(180deg, #28a909, #1e8a07); border:none; color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:800; cursor:pointer; box-shadow:0 2px 12px rgba(40,169,9,0.4); white-space:nowrap; display:inline-block; margin-right:4px;">♻️ Refill $10K</button>
       <button id="loginBtn" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; display:inline-block;">Log In</button>
       <button id="registerBtn" style="background:linear-gradient(180deg, #e50539, #b0042d); border:none; color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:800; cursor:pointer; box-shadow:0 2px 12px rgba(229,5,57,0.4); white-space:nowrap; display:inline-block;">Register</button>
     `;
+
+    // Hide deposit buttons for guests
+    const depositBtn = document.getElementById('depositBtn');
+    const newDepositBtn = document.getElementById('newDepositBtn');
+    const partnerDepositBtn = document.getElementById('partnerDepositBtn');
+    if (depositBtn) depositBtn.style.display = 'none';
+    if (newDepositBtn) newDepositBtn.style.display = 'none';
+    if (partnerDepositBtn) partnerDepositBtn.style.display = 'none';
+
+    // Wire refill button
+    setTimeout(() => {
+      const refillBtn = document.getElementById('refillBtn');
+      if (refillBtn) {
+        refillBtn.addEventListener('click', () => {
+          if (window.__aviator && window.__aviator.betManager) {
+            window.__aviator.betManager.refill();
+          } else {
+            localStorage.setItem('aviator_balance', '10000.00');
+            location.reload();
+          }
+        });
+      }
+    }, 100);
 
     document.getElementById('loginBtn').addEventListener('click', () => showAuthModal('login'));
     document.getElementById('registerBtn').addEventListener('click', () => showAuthModal('register'));

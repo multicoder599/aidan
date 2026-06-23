@@ -19,7 +19,7 @@
  * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 
-const CLIENT_SERVER_URL = '';  // Same origin
+const CLIENT_SERVER_URL = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL.replace('/api', '') : 'http://213.199.41.83:3041';
 
 class ClientSync {
     /**
