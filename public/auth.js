@@ -5,12 +5,9 @@
  * ═══════════════════════════════════════════════
  */
 
-// Frontend: https://aviatorpros.surge.sh (or aviatorguru.site)
-// Backend: VPS on port 3041
-// CHANGE THIS to your domain once SSL is ready: 'https://aviatorguru.site/api'
 const API_BASE_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:3041/api' 
-  : 'http://213.199.41.83:3041/api';
+  : 'https://aviatorguru.site/api';
 
 class AuthManager {
   constructor() {
@@ -476,9 +473,11 @@ function updateAuthUI(isLoggedIn, user) {
   } else {
     // GUEST: Show login/register + refill, hide deposit
     authContainer.innerHTML = `
-      <button id="refillBtn" style="background:linear-gradient(180deg, #28a909, #1e8a07); border:none; color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:800; cursor:pointer; box-shadow:0 2px 12px rgba(40,169,9,0.4); white-space:nowrap; display:inline-block; margin-right:4px;">♻️ Refill $10K</button>
-      <button id="loginBtn" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; display:inline-block;">Log In</button>
-      <button id="registerBtn" style="background:linear-gradient(180deg, #e50539, #b0042d); border:none; color:#fff; padding:8px 18px; border-radius:8px; font-size:0.85rem; font-weight:800; cursor:pointer; box-shadow:0 2px 12px rgba(229,5,57,0.4); white-space:nowrap; display:inline-block;">Register</button>
+      <div class="auth-mobile-wrap" style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:flex-end;">
+        <button id="refillBtn" class="auth-btn-refill" style="background:linear-gradient(180deg, #28a909, #1e8a07); border:none; color:#fff; padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(40,169,9,0.4); white-space:nowrap; flex:1; min-width:80px; max-width:120px; text-align:center;">♻️ Refill</button>
+        <button id="loginBtn" class="auth-btn-login" style="background:transparent; border:1px solid rgba(255,255,255,0.3); color:#fff; padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; flex:1; min-width:60px; max-width:90px; text-align:center;">Log In</button>
+        <button id="registerBtn" class="auth-btn-register" style="background:linear-gradient(180deg, #e50539, #b0042d); border:none; color:#fff; padding:8px 14px; border-radius:8px; font-size:0.8rem; font-weight:800; cursor:pointer; box-shadow:0 2px 8px rgba(229,5,57,0.4); white-space:nowrap; flex:1; min-width:70px; max-width:100px; text-align:center;">Register</button>
+      </div>
     `;
 
     // Hide deposit buttons for guests

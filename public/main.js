@@ -12,7 +12,7 @@
     // Set global API base URL before any other scripts run
     window.API_BASE_URL = window.location.hostname === 'localhost' 
       ? 'http://localhost:3041/api' 
-      : 'http://213.199.41.83:3041/api';
+      : 'https://aviatorguru.site/api';
 
     // Once you have SSL on aviatorguru.site, change to:
     // window.API_BASE_URL = 'https://aviatorguru.site/api';

@@ -3032,3 +3032,99 @@
     background: rgba(255,255,255,0.15);
     border-radius: 2px;
   }
+
+/* ═══════════════════════════════════════════════ */
+/* MOBILE AUTH BUTTONS — Responsive Fix           */
+/* ═══════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .auth-mobile-wrap {
+    width: 100%;
+    justify-content: space-between !important;
+    gap: 4px !important;
+  }
+
+  .auth-btn-refill,
+  .auth-btn-login,
+  .auth-btn-register {
+    flex: 1 1 30% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 10px 6px !important;
+    font-size: 0.75rem !important;
+    border-radius: 6px !important;
+  }
+
+  .auth-btn-refill {
+    order: 3;
+  }
+
+  .auth-btn-login {
+    order: 1;
+  }
+
+  .auth-btn-register {
+    order: 2;
+  }
+
+  /* Header adjustments for mobile */
+  .header-right {
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: flex-end;
+  }
+
+  #authButtonsContainer {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  /* Make header taller on mobile to fit buttons */
+  .header-bar {
+    height: auto;
+    min-height: 54px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+  }
+
+  .header-left {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-btn-refill,
+  .auth-btn-login,
+  .auth-btn-register {
+    font-size: 0.7rem !important;
+    padding: 8px 4px !important;
+  }
+
+  .header-logo-crop {
+    height: 36px;
+  }
+
+  .header-balance {
+    font-size: 0.75rem;
+  }
+}
+
+
+/* Auth Modal Mobile Responsive */
+@media (max-width: 768px) {
+  .auth-card {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 10px auto !important;
+  }
+
+  .auth-card .modal-body {
+    padding: 16px !important;
+  }
+
+  .auth-card .input-group input,
+  .auth-card .input-group select {
+    padding: 10px !important;
+    font-size: 16px !important; /* Prevent iOS zoom */
+  }
+}
