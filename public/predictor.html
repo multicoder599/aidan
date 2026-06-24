@@ -40,6 +40,8 @@
     .plane-img {
       width: 280px;
       height: auto;
+      max-height: 200px;
+      object-fit: contain;
       filter: drop-shadow(0 0 20px rgba(229,57,53,0.8));
       animation: float 3s ease-in-out infinite;
       position: relative;
@@ -66,7 +68,7 @@
     }
     .sites-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
       padding: 0 16px 40px;
       max-width: 500px;
@@ -77,24 +79,41 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8px;
+      padding: 10px 6px;
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
-      aspect-ratio: 1;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 8px rgba(229,57,53,0.15), inset 0 0 12px rgba(229,57,53,0.05);
     }
     .site-item:hover {
-      background: rgba(229,57,53,0.1);
-      border-color: rgba(229,57,53,0.3);
-      transform: translateY(-2px);
+      background: rgba(229,57,53,0.15);
+      border-color: rgba(229,57,53,0.5);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 20px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.2), inset 0 0 15px rgba(229,57,53,0.1);
+    }
+    .site-item:active {
+      transform: translateY(-1px) scale(0.98);
     }
     .site-img {
       width: 48px;
       height: 48px;
       border-radius: 8px;
       object-fit: contain;
+      margin-bottom: 6px;
+      pointer-events: none;
+    }
+    .site-name {
+      font-size: 0.65rem;
+      color: #aaa;
+      text-align: center;
+      font-weight: 500;
+      line-height: 1.2;
+      pointer-events: none;
+    }
+    .site-item:hover .site-name {
+      color: #fff;
     }
 
     /* Activation Modal */
@@ -102,7 +121,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.9);
       z-index: 1000;
       align-items: center;
       justify-content: center;
@@ -111,12 +130,13 @@
     .modal-overlay.active { display: flex; }
     .modal-card {
       background: #111;
-      border: 1px solid rgba(229,57,53,0.3);
+      border: 1px solid rgba(229,57,53,0.4);
       border-radius: 16px;
       padding: 28px;
       width: 100%;
       max-width: 360px;
       text-align: center;
+      box-shadow: 0 0 30px rgba(229,57,53,0.2);
     }
     .modal-title {
       font-size: 1.3rem;
@@ -134,6 +154,10 @@
       text-align: center;
       letter-spacing: 2px;
       margin-bottom: 20px;
+      outline: none;
+    }
+    .modal-input:focus {
+      box-shadow: 0 0 15px rgba(229,57,53,0.3);
     }
     .modal-input::placeholder { color: #666; }
     .modal-btns {
@@ -163,21 +187,26 @@
       padding: 20px;
       text-align: center;
       min-height: 100vh;
+      position: relative;
     }
     .predictor-screen.active { display: block; }
     .aviator-logo-box {
       border: 2px solid #8bc34a;
       border-radius: 12px;
       padding: 20px;
-      margin-bottom: 30px;
+      margin: 40px auto 30px;
+      max-width: 320px;
       background: rgba(139,195,74,0.05);
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 0 20px rgba(139,195,74,0.15), inset 0 0 20px rgba(139,195,74,0.05);
     }
     .aviator-logo-box img {
       width: 200px;
       height: auto;
+      max-height: 120px;
+      object-fit: contain;
       filter: drop-shadow(0 0 10px rgba(229,57,53,0.5));
     }
     .vpn-ring {
@@ -190,6 +219,7 @@
       justify-content: center;
       margin: 0 auto 30px;
       position: relative;
+      box-shadow: 0 0 20px rgba(76,175,80,0.2);
     }
     .vpn-ring::before {
       content: '';
@@ -218,15 +248,85 @@
       cursor: pointer;
       margin-bottom: 20px;
       transition: all 0.2s;
+      box-shadow: 0 0 15px rgba(139,195,74,0.3);
     }
-    .start-btn:hover { filter: brightness(1.1); }
+    .start-btn:hover { filter: brightness(1.1); box-shadow: 0 0 25px rgba(139,195,74,0.5); }
     .start-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
+    .loading-spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(139,195,74,0.2);
+      border-top-color: #8bc34a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    .loading-spinner.active { display: block; }
+
+    .vpn-key-section {
+      display: none;
+      margin-top: 20px;
+      animation: fadeIn 0.5s ease;
+    }
+    .vpn-key-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .vpn-key-label {
+      color: #e53935;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .vpn-key-input {
+      width: 100%;
+      max-width: 280px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid #e53935;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .vpn-key-input:focus {
+      box-shadow: 0 0 15px rgba(229,57,53,0.3);
+    }
+    .vpn-connect-btn {
+      width: 200px;
+      padding: 14px;
+      background: linear-gradient(180deg, #e53935, #b71c1c);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 0 15px rgba(229,57,53,0.3);
+    }
+    .vpn-connect-btn:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 0 25px rgba(229,57,53,0.5);
+    }
+    .vpn-error {
+      color: #e53935;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      font-weight: 600;
+      display: none;
+    }
+    .vpn-error.active { display: block; }
+
     .prediction-result {
       display: none;
       margin-top: 30px;
+      animation: fadeIn 0.8s ease;
     }
     .prediction-result.active { display: block; }
     .pred-value {
@@ -251,29 +351,6 @@
       cursor: pointer;
       z-index: 10;
     }
-    .error-msg {
-      color: #e53935;
-      font-size: 1rem;
-      font-weight: 600;
-      margin-top: 20px;
-      padding: 12px 20px;
-      background: rgba(229,57,53,0.1);
-      border: 1px solid rgba(229,57,53,0.3);
-      border-radius: 10px;
-      display: none;
-    }
-    .error-msg.active { display: inline-block; }
-    .loading-spinner {
-      display: none;
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(139,195,74,0.2);
-      border-top-color: #8bc34a;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-    .loading-spinner.active { display: block; }
   </style>
 <base target="_blank">
 </head>
@@ -283,7 +360,7 @@
   <!-- Site Selection Screen -->
   <div id="siteScreen">
     <div class="hero">
-      <img src="plane.png" alt="" class="plane-img">
+      <img src="plane.png" alt="plane" class="plane-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=font-size:3rem;color:#e53935;>&#9992;</div>'">
     </div>
 
     <button class="choose-btn" onclick="showActivation()">Choose Your Betting Site</button>
@@ -300,7 +377,7 @@
         <button class="modal-btn btn-cancel" onclick="hideActivation()">Cancel</button>
         <button class="modal-btn btn-submit" onclick="submitActivation()">Submit</button>
       </div>
-      <div class="key-error" id="keyError">Invalid key. Required: Admin@370</div>
+      <div class="key-error" id="keyError">Invalid key</div>
     </div>
   </div>
 
@@ -308,14 +385,21 @@
   <div class="predictor-screen" id="predictorScreen">
     <button class="back-btn" onclick="goBack()">&#8592;</button>
     <div class="aviator-logo-box">
-      <img src="aviator.png" alt="Aviator">
+      <img src="aviator.png" alt="aviator" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=font-size:2rem;color:#e53935;font-weight:900;>AVIATOR</div>'">
     </div>
-    <div class="vpn-ring">
-      <span class="vpn-text">Connect VPN</span>
+    <div class="vpn-ring" id="vpnRing">
+      <span class="vpn-text" id="vpnText">Connect VPN</span>
     </div>
     <button class="start-btn" id="startBtn" onclick="startPrediction()">Start</button>
     <div class="loading-spinner" id="loadingSpinner"></div>
-    <div class="error-msg" id="errorMsg">Error: VPN key required</div>
+
+    <div class="vpn-key-section" id="vpnKeySection">
+      <div class="vpn-key-label">VPN key required</div>
+      <input type="text" class="vpn-key-input" id="vpnKeyInput" placeholder="Enter VPN key" maxlength="20">
+      <br>
+      <button class="vpn-connect-btn" onclick="connectVPN()">Connect</button>
+      <div class="vpn-error" id="vpnError">Invalid key</div>
+    </div>
 
     <div class="prediction-result" id="predictionResult">
       <div class="pred-value" id="predValue">2.50x</div>
@@ -326,23 +410,47 @@
 
   <script>
     const sites = [
-      'SportyBet', 'Betway', 'LottoStar', 'MSport', '1win', 'HollywoodBets',
-      '1xBet', 'PremierBet', 'PinUpBet', 'MelBet', 'SuperBet', 'BetKing',
-      'Bwin', 'WilliamHill', 'PaddyPower', 'Bet365', 'SkyBet', 'Betfair',
-      '888sport', 'Unibet', 'Mwos', '22Bet', 'DafaBet', 'Betpawa',
-      'Stake', 'Adjarabet', 'Cloudbet', 'Luckystar', '10BET', 'GGBET', 'SpinCity'
+      {name:'SportyBet', img:'sportybet.png'},
+      {name:'Betway', img:'betway.png'},
+      {name:'LottoStar', img:'lottostar.png'},
+      {name:'MSport', img:'msport.png'},
+      {name:'1win', img:'1win.png'},
+      {name:'Hollywood', img:'hollywoodbets.png'},
+      {name:'1xBet', img:'1xbet.png'},
+      {name:'PremierBet', img:'premierbet.png'},
+      {name:'Pin-Up', img:'pinupbet.png'},
+      {name:'MelBet', img:'melbet.png'},
+      {name:'SuperBet', img:'superbet.png'},
+      {name:'BetKing', img:'betking.png'},
+      {name:'Bwin', img:'bwin.png'},
+      {name:'WilliamHill', img:'williamhill.png'},
+      {name:'PaddyPower', img:'paddypower.png'},
+      {name:'Bet365', img:'bet365.png'},
+      {name:'SkyBet', img:'skybet.png'},
+      {name:'Betfair', img:'betfair.png'},
+      {name:'888sport', img:'888sport.png'},
+      {name:'Unibet', img:'unibet.png'},
+      {name:'Mwos', img:'mwos.png'},
+      {name:'22Bet', img:'22bet.png'},
+      {name:'DafaBet', img:'dafabet.png'},
+      {name:'Betpawa', img:'betpawa.png'},
+      {name:'Stake', img:'stake.png'},
+      {name:'Adjarabet', img:'adjarabet.png'},
+      {name:'Cloudbet', img:'cloudbet.png'},
+      {name:'Luckystar', img:'luckystar.png'},
+      {name:'10BET', img:'10bet.png'},
+      {name:'GGBET', img:'ggbet.png'},
+      {name:'SpinCity', img:'spincity.png'}
     ];
 
     function renderSites() {
       const grid = document.getElementById('sitesGrid');
-      grid.innerHTML = sites.map(s => {
-        const imgName = s.toLowerCase().replace(/[^a-z0-9]/g, '') + '.png';
-        return `
-          <div class="site-item" onclick="showActivation('${s}')">
-            <img src="images/${imgName}" alt="${s}" class="site-img" onerror="this.style.display='none'; this.parentElement.style.background='rgba(229,57,53,0.1)'">
-          </div>
-        `;
-      }).join('');
+      grid.innerHTML = sites.map(s => `
+        <div class="site-item" onclick="showActivation('${s.name}')">
+          <img src="images/${s.img}" alt="${s.name}" class="site-img" onerror="this.style.display='none'; this.parentElement.style.background='rgba(229,57,53,0.2)'; this.parentElement.style.borderColor='rgba(229,57,53,0.5)'">
+          <span class="site-name">${s.name}</span>
+        </div>
+      `).join('');
     }
     renderSites();
 
@@ -360,7 +468,7 @@
     }
     function submitActivation() {
       const code = document.getElementById('activationInput').value.trim();
-      if (code !== 'Admin@370') {
+      if (code !== 'Admin@375') {
         document.getElementById('keyError').style.display = 'block';
         return;
       }
@@ -371,35 +479,73 @@
     function goBack() {
       document.getElementById('predictorScreen').classList.remove('active');
       document.getElementById('siteScreen').style.display = 'block';
-      document.getElementById('errorMsg').classList.remove('active');
+      resetPredictor();
+    }
+    function resetPredictor() {
+      document.getElementById('vpnError').classList.remove('active');
+      document.getElementById('vpnKeySection').classList.remove('active');
       document.getElementById('loadingSpinner').classList.remove('active');
+      document.getElementById('predictionResult').classList.remove('active');
       document.getElementById('startBtn').disabled = false;
+      document.getElementById('startBtn').style.display = 'inline-block';
       document.getElementById('startBtn').textContent = 'Start';
-      document.querySelector('.vpn-ring').style.borderColor = '#4caf50';
-      document.querySelector('.vpn-text').textContent = 'Connect VPN';
-      document.querySelector('.vpn-text').style.color = '#e53935';
+      document.getElementById('vpnKeyInput').value = '';
+      const ring = document.getElementById('vpnRing');
+      const text = document.getElementById('vpnText');
+      ring.style.borderColor = '#4caf50';
+      text.textContent = 'Connect VPN';
+      text.style.color = '#e53935';
     }
 
     function startPrediction() {
       const btn = document.getElementById('startBtn');
       const spinner = document.getElementById('loadingSpinner');
-      const errorMsg = document.getElementById('errorMsg');
 
       btn.disabled = true;
       btn.textContent = 'Loading...';
       spinner.classList.add('active');
-      errorMsg.classList.remove('active');
-
-      document.querySelector('.vpn-ring').style.borderColor = '#8bc34a';
-      document.querySelector('.vpn-text').textContent = 'Connected';
-      document.querySelector('.vpn-text').style.color = '#4caf50';
 
       setTimeout(() => {
         spinner.classList.remove('active');
-        btn.textContent = 'Start';
-        btn.disabled = false;
-        errorMsg.classList.add('active');
+        btn.style.display = 'none';
+        document.getElementById('vpnKeySection').classList.add('active');
+        document.getElementById('vpnKeyInput').focus();
       }, 2500);
+    }
+
+    function connectVPN() {
+      const input = document.getElementById('vpnKeyInput');
+      const error = document.getElementById('vpnError');
+      const key = input.value.trim();
+
+      if (key !== 'Admin@375') {
+        error.classList.add('active');
+        return;
+      }
+
+      error.classList.remove('active');
+      document.getElementById('vpnKeySection').classList.remove('active');
+
+      const ring = document.getElementById('vpnRing');
+      const text = document.getElementById('vpnText');
+      const spinner = document.getElementById('loadingSpinner');
+
+      spinner.classList.add('active');
+      text.textContent = 'Connecting...';
+      text.style.color = '#f5a623';
+
+      setTimeout(() => {
+        spinner.classList.remove('active');
+        ring.style.borderColor = '#8bc34a';
+        text.textContent = 'Connected';
+        text.style.color = '#4caf50';
+
+        setTimeout(() => {
+          document.getElementById('predValue').textContent = (1.5 + Math.random() * 8).toFixed(2) + 'x';
+          document.getElementById('predRound').querySelector('span').textContent = Math.floor(Math.random() * 9000 + 1000);
+          document.getElementById('predictionResult').classList.add('active');
+        }, 800);
+      }, 2000);
     }
   </script>
 </body>

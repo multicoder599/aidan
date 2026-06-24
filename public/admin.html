@@ -17,7 +17,7 @@
       padding: 24px 16px;
     }
 
-    /* ===== LANDING PAGE (same as predictor) ===== */
+    /* ===== LANDING PAGE ===== */
     .landing-page {
       width: 100%;
       min-height: 100vh;
@@ -55,6 +55,8 @@
     .landing-hero img {
       width: 280px;
       height: auto;
+      max-height: 200px;
+      object-fit: contain;
       filter: drop-shadow(0 0 20px rgba(229,57,53,0.8));
       animation: float 3s ease-in-out infinite;
       position: relative;
@@ -81,7 +83,7 @@
     }
     .landing-sites-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
       padding: 0 16px 40px;
       max-width: 500px;
@@ -92,24 +94,41 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8px;
+      padding: 10px 6px;
       background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.2s;
-      aspect-ratio: 1;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 8px rgba(229,57,53,0.15), inset 0 0 12px rgba(229,57,53,0.05);
     }
     .landing-site-item:hover {
-      background: rgba(229,57,53,0.1);
-      border-color: rgba(229,57,53,0.3);
-      transform: translateY(-2px);
+      background: rgba(229,57,53,0.15);
+      border-color: rgba(229,57,53,0.5);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 0 20px rgba(229,57,53,0.4), 0 0 40px rgba(229,57,53,0.2), inset 0 0 15px rgba(229,57,53,0.1);
+    }
+    .landing-site-item:active {
+      transform: translateY(-1px) scale(0.98);
     }
     .landing-site-img {
       width: 48px;
       height: 48px;
       border-radius: 8px;
       object-fit: contain;
+      margin-bottom: 6px;
+      pointer-events: none;
+    }
+    .landing-site-name {
+      font-size: 0.65rem;
+      color: #aaa;
+      text-align: center;
+      font-weight: 500;
+      line-height: 1.2;
+      pointer-events: none;
+    }
+    .landing-site-item:hover .landing-site-name {
+      color: #fff;
     }
 
     /* ===== ADMIN PANEL ===== */
@@ -336,7 +355,7 @@
   <div class="landing-page" id="landingPage">
     <div class="landing-header">AVIATOR ADMIN PANEL</div>
     <div class="landing-hero">
-      <img src="plane.png" alt="">
+      <img src="plane.png" alt="plane" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=font-size:3rem;color:#e53935;>&#9992;</div>'">
     </div>
     <button class="landing-choose-btn">Choose Your Betting Site</button>
     <div class="landing-sites-grid" id="landingSitesGrid"></div>
@@ -402,31 +421,53 @@
     const ADMIN_SECRET = 'aviator-admin-2024';
 
     const sites = [
-      'SportyBet', 'Betway', 'LottoStar', 'MSport', '1win', 'HollywoodBets',
-      '1xBet', 'PremierBet', 'PinUpBet', 'MelBet', 'SuperBet', 'BetKing',
-      'Bwin', 'WilliamHill', 'PaddyPower', 'Bet365', 'SkyBet', 'Betfair',
-      '888sport', 'Unibet', 'Mwos', '22Bet', 'DafaBet', 'Betpawa',
-      'Stake', 'Adjarabet', 'Cloudbet', 'Luckystar', '10BET', 'GGBET', 'SpinCity'
+      {name:'SportyBet', img:'sportybet.png'},
+      {name:'Betway', img:'betway.png'},
+      {name:'LottoStar', img:'lottostar.png'},
+      {name:'MSport', img:'msport.png'},
+      {name:'1win', img:'1win.png'},
+      {name:'Hollywood', img:'hollywoodbets.png'},
+      {name:'1xBet', img:'1xbet.png'},
+      {name:'PremierBet', img:'premierbet.png'},
+      {name:'Pin-Up', img:'pinupbet.png'},
+      {name:'MelBet', img:'melbet.png'},
+      {name:'SuperBet', img:'superbet.png'},
+      {name:'BetKing', img:'betking.png'},
+      {name:'Bwin', img:'bwin.png'},
+      {name:'WilliamHill', img:'williamhill.png'},
+      {name:'PaddyPower', img:'paddypower.png'},
+      {name:'Bet365', img:'bet365.png'},
+      {name:'SkyBet', img:'skybet.png'},
+      {name:'Betfair', img:'betfair.png'},
+      {name:'888sport', img:'888sport.png'},
+      {name:'Unibet', img:'unibet.png'},
+      {name:'Mwos', img:'mwos.png'},
+      {name:'22Bet', img:'22bet.png'},
+      {name:'DafaBet', img:'dafabet.png'},
+      {name:'Betpawa', img:'betpawa.png'},
+      {name:'Stake', img:'stake.png'},
+      {name:'Adjarabet', img:'adjarabet.png'},
+      {name:'Cloudbet', img:'cloudbet.png'},
+      {name:'Luckystar', img:'luckystar.png'},
+      {name:'10BET', img:'10bet.png'},
+      {name:'GGBET', img:'ggbet.png'},
+      {name:'SpinCity', img:'spincity.png'}
     ];
 
-    // ===== LANDING PAGE =====
     function renderLandingSites() {
       const grid = document.getElementById('landingSitesGrid');
-      grid.innerHTML = sites.map(s => {
-        const imgName = s.toLowerCase().replace(/[^a-z0-9]/g, '') + '.png';
-        return `
-          <div class="landing-site-item" onclick="enterAdmin('${s}')">
-            <img src="images/${imgName}" alt="${s}" class="landing-site-img" onerror="this.style.display='none'; this.parentElement.style.background='rgba(229,57,53,0.1)'">
-          </div>
-        `;
-      }).join('');
+      grid.innerHTML = sites.map(s => `
+        <div class="landing-site-item" onclick="enterAdmin('${s.name}')">
+          <img src="images/${s.img}" alt="${s.name}" class="landing-site-img" onerror="this.style.display='none'; this.parentElement.style.background='rgba(229,57,53,0.2)'; this.parentElement.style.borderColor='rgba(229,57,53,0.5)'">
+          <span class="landing-site-name">${s.name}</span>
+        </div>
+      `).join('');
     }
     renderLandingSites();
 
     function enterAdmin(siteName) {
       document.getElementById('landingPage').style.display = 'none';
       document.getElementById('adminPanel').classList.add('active');
-      // Start polling once admin is entered
       if (!pollInterval) {
         pollInterval = setInterval(pollGameState, 1000);
         pollGameState();
@@ -438,7 +479,6 @@
       document.getElementById('adminPanel').classList.remove('active');
     }
 
-    // ===== ADMIN PANEL =====
     const els = {
       gameStateValue: document.getElementById('gameStateValue'),
       currentRound: document.getElementById('currentRound'),
@@ -505,7 +545,6 @@
         const res = await fetch(`${API_BASE}/api/prediction`);
         const data = await res.json();
         updateGameState(data.gameState, data.roundNumber, data.multiplier, data.prediction);
-
         if (data.gameState === 'crashed' && data.prediction) {
           addLog('CRASH ' + data.prediction.toFixed(2) + 'x', data.roundNumber, 'actual');
         }
@@ -520,11 +559,9 @@
         alert('Enter a valid multiplier (minimum 1.00)');
         return;
       }
-
       els.setBtn.disabled = true;
       els.setBtn.textContent = 'Setting...';
       els.setStatus.innerHTML = '';
-
       try {
         const res = await fetch(`${API_BASE}/api/admin/crash-point`, {
           method: 'POST',
@@ -532,7 +569,6 @@
           body: JSON.stringify({ crashPoint: val, secret: ADMIN_SECRET })
         });
         const data = await res.json();
-
         if (data.success) {
           els.nextRoundInfo.style.display = 'block';
           els.nextRoundValue.textContent = val.toFixed(2) + 'x';
@@ -545,7 +581,6 @@
         console.error('Set failed:', err);
         els.setStatus.innerHTML = '<span class="status-badge error">Network error</span>';
       }
-
       els.setBtn.disabled = false;
       els.setBtn.textContent = 'Set Next Round';
     });
