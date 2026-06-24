@@ -1,8 +1,6 @@
 /**
- * ═══════════════════════════════════════════════
  * AUTH SYSTEM — auth.js
  * Handles registration, login, JWT storage, and API calls
- * ═══════════════════════════════════════════════
  */
 
 const API_BASE_URL = window.location.hostname === 'localhost' 
@@ -16,7 +14,6 @@ class AuthManager {
     this.isLoggedIn = false;
     this._listeners = [];
 
-    // Try to restore session
     if (this.token) {
       this.validateToken();
     }
@@ -42,6 +39,14 @@ class AuthManager {
       if (data.success) {
         this.user = data.user;
         this.isLoggedIn = true;
+        // CRITICAL FIX: Don't overwrite local balance with stale server balance
+        // The server balance may be outdated if bets were placed client-side
+        const localBal = parseFloat(localStorage.getItem('aviator_balance')) || 0;
+        if (localBal > 0) {
+          this.user.totalBalance = localBal;
+        } else if (data.user.totalBalance) {
+          localStorage.setItem('aviator_balance', data.user.totalBalance.toString());
+        }
         this._notifyListeners();
         return true;
       } else {
@@ -71,8 +76,10 @@ class AuthManager {
         this.isLoggedIn = true;
         localStorage.setItem('aviator_token', this.token);
         localStorage.setItem('aviator_username', data.user.username);
-        localStorage.setItem('aviator_balance', data.user.totalBalance.toString());
-        localStorage.setItem('aviator_currency', data.user.currency);
+        // Store initial balance from server
+        const initialBalance = data.user.totalBalance || 50;
+        localStorage.setItem('aviator_balance', initialBalance.toString());
+        localStorage.setItem('aviator_currency', data.user.currency || 'USD');
 
         this._notifyListeners();
         return { success: true, data };
@@ -101,8 +108,17 @@ class AuthManager {
         this.isLoggedIn = true;
         localStorage.setItem('aviator_token', this.token);
         localStorage.setItem('aviator_username', data.user.username);
-        localStorage.setItem('aviator_balance', data.user.totalBalance.toString());
-        localStorage.setItem('aviator_currency', data.user.currency);
+        // CRITICAL FIX: Preserve local balance if it exists and is different
+        const localBal = parseFloat(localStorage.getItem('aviator_balance')) || 0;
+        const serverBal = data.user.totalBalance || 50;
+        if (localBal > serverBal) {
+          // Local balance is more recent (user placed bets/won)
+          this.user.totalBalance = localBal;
+        } else {
+          localStorage.setItem('aviator_balance', serverBal.toString());
+          this.user.totalBalance = serverBal;
+        }
+        localStorage.setItem('aviator_currency', data.user.currency || 'USD');
 
         this._notifyListeners();
         return { success: true, data };
@@ -137,15 +153,8 @@ class AuthManager {
     }
 
     try {
-      const res = await fetch(url, {
-        ...options,
-        headers
-      });
-
-      if (res.status === 401) {
-        this.logout();
-      }
-
+      const res = await fetch(url, { ...options, headers });
+      if (res.status === 401) { this.logout(); }
       return await res.json();
     } catch (err) {
       console.error('[Auth] API call error:', err);
@@ -154,17 +163,29 @@ class AuthManager {
   }
 
   getBalance() {
-    if (this.user) {
-      return this.user.totalBalance || 0;
+    // ALWAYS prefer localStorage — it is updated in real-time by BetManager
+    const localBal = parseFloat(localStorage.getItem('aviator_balance'));
+    if (!isNaN(localBal)) {
+      return localBal;
     }
-    return parseFloat(localStorage.getItem('aviator_balance')) || 50;
+    if (this.user) {
+      return this.user.totalBalance || 50;
+    }
+    return 50;
   }
 
   getCurrency() {
+    const localCur = localStorage.getItem('aviator_currency');
+    if (localCur) return localCur;
+    if (this.user) return this.user.currency || 'USD';
+    return 'USD';
+  }
+
+  // Call this whenever BetManager updates balance to keep auth in sync
+  syncBalance(newBalance) {
     if (this.user) {
-      return this.user.currency || 'USD';
+      this.user.totalBalance = newBalance;
     }
-    return localStorage.getItem('aviator_currency') || 'USD';
   }
 }
 
@@ -178,35 +199,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initAuthUI() {
-  // Create auth modal if not exists
   if (!document.getElementById('authModal')) {
     createAuthModal();
   }
 
-  // Wire auth buttons
   const loginBtn = document.getElementById('loginBtn');
   const registerBtn = document.getElementById('registerBtn');
   const logoutBtn = document.getElementById('logoutBtn');
 
-  if (loginBtn) {
-    loginBtn.addEventListener('click', () => showAuthModal('login'));
-  }
-  if (registerBtn) {
-    registerBtn.addEventListener('click', () => showAuthModal('register'));
-  }
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      window.authManager.logout();
-      location.reload();
-    });
-  }
+  if (loginBtn) loginBtn.addEventListener('click', () => showAuthModal('login'));
+  if (registerBtn) registerBtn.addEventListener('click', () => showAuthModal('register'));
+  if (logoutBtn) logoutBtn.addEventListener('click', () => {
+    window.authManager.logout();
+    location.reload();
+  });
 
-  // Update UI based on auth state
   window.authManager.onAuthChange((isLoggedIn, user) => {
     updateAuthUI(isLoggedIn, user);
   });
 
-  // Initial check - render buttons for BOTH logged in AND guest users
   if (window.authManager.isLoggedIn) {
     updateAuthUI(true, window.authManager.user);
   } else {
@@ -227,7 +238,6 @@ function createAuthModal() {
       <div class="modal-body">
         <div id="authMessage" style="display:none; padding:10px; border-radius:8px; margin-bottom:12px; font-size:0.85rem;"></div>
 
-        <!-- Register Fields -->
         <div id="registerFields" style="display:none;">
           <div class="input-group">
             <label>Username</label>
@@ -236,61 +246,61 @@ function createAuthModal() {
           <div class="input-group" style="margin-top:12px;">
             <label>Country</label>
             <select id="regCountry" style="width:100%; padding:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; margin-top:6px;">
-  <option value="DZ">Algeria 🇩🇿</option>
-  <option value="AO">Angola 🇦🇴</option>
-  <option value="BJ">Benin 🇧🇯</option>
-  <option value="BW">Botswana 🇧🇼</option>
-  <option value="BF">Burkina Faso 🇧🇫</option>
-  <option value="BI">Burundi 🇧🇮</option>
-  <option value="CM">Cameroon 🇨🇲</option>
-  <option value="CV">Cape Verde 🇨🇻</option>
-  <option value="CF">Central African Republic 🇨🇫</option>
-  <option value="TD">Chad 🇹🇩</option>
-  <option value="KM">Comoros 🇰🇲</option>
-  <option value="CG">Congo 🇨🇬</option>
-  <option value="CD">DR Congo 🇨🇩</option>
-  <option value="CI">Côte d'Ivoire 🇨🇮</option>
-  <option value="DJ">Djibouti 🇩🇯</option>
-  <option value="EG">Egypt 🇪🇬</option>
-  <option value="GQ">Equatorial Guinea 🇬🇶</option>
-  <option value="ER">Eritrea 🇪🇷</option>
-  <option value="SZ">Eswatini 🇸🇿</option>
-  <option value="ET">Ethiopia 🇪🇹</option>
-  <option value="GA">Gabon 🇬🇦</option>
-  <option value="GM">Gambia 🇬🇲</option>
-  <option value="GH">Ghana 🇬🇭</option>
-  <option value="GN">Guinea 🇬🇳</option>
-  <option value="GW">Guinea-Bissau 🇬🇼</option>
-  <option value="KE" selected>Kenya 🇰🇪</option>
-  <option value="LS">Lesotho 🇱🇸</option>
-  <option value="LR">Liberia 🇱🇷</option>
-  <option value="LY">Libya 🇱🇾</option>
-  <option value="MG">Madagascar 🇲🇬</option>
-  <option value="MW">Malawi 🇲🇼</option>
-  <option value="ML">Mali 🇲🇱</option>
-  <option value="MR">Mauritania 🇲🇷</option>
-  <option value="MU">Mauritius 🇲🇺</option>
-  <option value="MA">Morocco 🇲🇦</option>
-  <option value="MZ">Mozambique 🇲🇿</option>
-  <option value="NA">Namibia 🇳🇦</option>
-  <option value="NE">Niger 🇳🇪</option>
-  <option value="NG">Nigeria 🇳🇬</option>
-  <option value="RW">Rwanda 🇷🇼</option>
-  <option value="ST">São Tomé and Príncipe 🇸🇹</option>
-  <option value="SN">Senegal 🇸🇳</option>
-  <option value="SC">Seychelles 🇸🇨</option>
-  <option value="SL">Sierra Leone 🇸🇱</option>
-  <option value="SO">Somalia 🇸🇴</option>
-  <option value="ZA">South Africa 🇿🇦</option>
-  <option value="SS">South Sudan 🇸🇸</option>
-  <option value="SD">Sudan 🇸🇩</option>
-  <option value="TZ">Tanzania 🇹🇿</option>
-  <option value="TG">Togo 🇹🇬</option>
-  <option value="TN">Tunisia 🇹🇳</option>
-  <option value="UG">Uganda 🇺🇬</option>
-  <option value="ZM">Zambia 🇿🇲</option>
-  <option value="ZW">Zimbabwe 🇿🇼</option>
-</select>
+              <option value="DZ">Algeria 🇩🇿</option>
+              <option value="AO">Angola 🇦🇴</option>
+              <option value="BJ">Benin 🇧🇯</option>
+              <option value="BW">Botswana 🇧🇼</option>
+              <option value="BF">Burkina Faso 🇧🇫</option>
+              <option value="BI">Burundi 🇧🇮</option>
+              <option value="CM">Cameroon 🇨🇲</option>
+              <option value="CV">Cape Verde 🇨🇻</option>
+              <option value="CF">Central African Republic 🇨🇫</option>
+              <option value="TD">Chad 🇹🇩</option>
+              <option value="KM">Comoros 🇰🇲</option>
+              <option value="CG">Congo 🇨🇬</option>
+              <option value="CD">DR Congo 🇨🇩</option>
+              <option value="CI">Côte d'Ivoire 🇨🇮</option>
+              <option value="DJ">Djibouti 🇩🇯</option>
+              <option value="EG">Egypt 🇪🇬</option>
+              <option value="GQ">Equatorial Guinea 🇬🇶</option>
+              <option value="ER">Eritrea 🇪🇷</option>
+              <option value="SZ">Eswatini 🇸🇿</option>
+              <option value="ET">Ethiopia 🇪🇹</option>
+              <option value="GA">Gabon 🇬🇦</option>
+              <option value="GM">Gambia 🇬🇲</option>
+              <option value="GH">Ghana 🇬🇭</option>
+              <option value="GN">Guinea 🇬🇳</option>
+              <option value="GW">Guinea-Bissau 🇬🇼</option>
+              <option value="KE" selected>Kenya 🇰🇪</option>
+              <option value="LS">Lesotho 🇱🇸</option>
+              <option value="LR">Liberia 🇱🇷</option>
+              <option value="LY">Libya 🇱🇾</option>
+              <option value="MG">Madagascar 🇲🇬</option>
+              <option value="MW">Malawi 🇲🇼</option>
+              <option value="ML">Mali 🇲🇱</option>
+              <option value="MR">Mauritania 🇲🇷</option>
+              <option value="MU">Mauritius 🇲🇺</option>
+              <option value="MA">Morocco 🇲🇦</option>
+              <option value="MZ">Mozambique 🇲🇿</option>
+              <option value="NA">Namibia 🇳🇦</option>
+              <option value="NE">Niger 🇳🇪</option>
+              <option value="NG">Nigeria 🇳🇬</option>
+              <option value="RW">Rwanda 🇷🇼</option>
+              <option value="ST">São Tomé and Príncipe 🇸🇹</option>
+              <option value="SN">Senegal 🇸🇳</option>
+              <option value="SC">Seychelles 🇸🇨</option>
+              <option value="SL">Sierra Leone 🇸🇱</option>
+              <option value="SO">Somalia 🇸🇴</option>
+              <option value="ZA">South Africa 🇿🇦</option>
+              <option value="SS">South Sudan 🇸🇸</option>
+              <option value="SD">Sudan 🇸🇩</option>
+              <option value="TZ">Tanzania 🇹🇿</option>
+              <option value="TG">Togo 🇹🇬</option>
+              <option value="TN">Tunisia 🇹🇳</option>
+              <option value="UG">Uganda 🇺🇬</option>
+              <option value="ZM">Zambia 🇿🇲</option>
+              <option value="ZW">Zimbabwe 🇿🇼</option>
+            </select>
           </div>
           <div class="input-group" style="margin-top:12px;">
             <label>Phone (optional)</label>
@@ -326,17 +336,14 @@ function createAuthModal() {
 
   document.body.appendChild(modal);
 
-  // Wire events
   document.getElementById('authModalClose').addEventListener('click', hideAuthModal);
   document.getElementById('authSubmitBtn').addEventListener('click', handleAuthSubmit);
   document.getElementById('authToggleBtn').addEventListener('click', toggleAuthMode);
 
-  // Close on outside click
   modal.addEventListener('click', (e) => {
     if (e.target === modal) hideAuthModal();
   });
 
-  // Enter key submit
   document.getElementById('authPassword').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') handleAuthSubmit();
   });
@@ -459,7 +466,10 @@ function updateAuthUI(isLoggedIn, user) {
   authContainer.innerHTML = '';
 
   if (isLoggedIn && user) {
-    // Logged-in: show user chip + logout
+    // Use live balance from BetManager / localStorage, not stale user object
+    const liveBalance = parseFloat(localStorage.getItem('aviator_balance')) || user.totalBalance || 0;
+    const currency = localStorage.getItem('aviator_currency') || user.currency || 'USD';
+
     authContainer.innerHTML = `
       <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.35);padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,0.08);">
         <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#28a909,#1e8a07);display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;color:#fff;">
@@ -467,7 +477,7 @@ function updateAuthUI(isLoggedIn, user) {
         </div>
         <div style="display:flex;flex-direction:column;line-height:1.1;">
           <span style="font-size:0.65rem;color:#9ea0a3;font-weight:500;">${user.username}</span>
-          <span style="font-size:0.7rem;color:#28a909;font-weight:700;">$${parseFloat(user.totalBalance || 0).toLocaleString('en-US', {minimumFractionDigits:2})}</span>
+          <span style="font-size:0.7rem;color:#28a909;font-weight:700;">$${parseFloat(liveBalance).toLocaleString('en-US', {minimumFractionDigits:2})}</span>
         </div>
       </div>
       <button id="logoutBtn" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:5px 10px;border-radius:6px;font-size:0.7rem;font-weight:600;cursor:pointer;">Logout</button>
@@ -481,14 +491,14 @@ function updateAuthUI(isLoggedIn, user) {
     // Update balance displays
     const navBalance = document.getElementById('navBalanceAmount');
     if (navBalance) {
-      navBalance.textContent = parseFloat(user.totalBalance || 0).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+      navBalance.textContent = parseFloat(liveBalance).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
     }
     const currencyEl = document.getElementById('navBalanceCurrency');
-    if (currencyEl) currencyEl.textContent = 'USD';
+    if (currencyEl) currencyEl.textContent = currency;
 
     const partnerCash = document.getElementById('partnerCashDisplay');
     if (partnerCash) {
-      partnerCash.textContent = parseFloat(user.totalBalance || 0).toLocaleString('en-US', {minimumFractionDigits:2});
+      partnerCash.textContent = parseFloat(liveBalance).toLocaleString('en-US', {minimumFractionDigits:2});
     }
 
     const headerUsername = document.getElementById('headerUsername');
@@ -498,14 +508,13 @@ function updateAuthUI(isLoggedIn, user) {
     if (partnerNavUsername) partnerNavUsername.textContent = user.username;
 
   } else {
-    // Guest: Refill, Login, Register in partner bar
+    // Guest mode
     authContainer.innerHTML = `
       <button id="refillBtn" style="background:linear-gradient(180deg,#28a909,#1e8a07);border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:800;cursor:pointer;box-shadow:0 2px 6px rgba(40,169,9,0.4);white-space:nowrap;">♻️ Refill</button>
       <button id="loginBtn" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:#fff;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;white-space:nowrap;">Log In</button>
       <button id="registerBtn" style="background:linear-gradient(180deg,#e50539,#b0042d);border:none;color:#fff;padding:6px 12px;border-radius:6px;font-size:0.75rem;font-weight:800;cursor:pointer;box-shadow:0 2px 6px rgba(229,5,57,0.4);white-space:nowrap;">Register</button>
     `;
 
-    // Hide deposit buttons for guests
     const depositBtn = document.getElementById('depositBtn');
     const newDepositBtn = document.getElementById('newDepositBtn');
     const partnerDepositBtn = document.getElementById('partnerDepositBtn');
@@ -513,7 +522,6 @@ function updateAuthUI(isLoggedIn, user) {
     if (newDepositBtn) newDepositBtn.style.display = 'none';
     if (partnerDepositBtn) partnerDepositBtn.style.display = 'none';
 
-    // Wire buttons
     document.getElementById('refillBtn').addEventListener('click', () => {
       if (window.__aviator && window.__aviator.betManager) {
         window.__aviator.betManager.refill();

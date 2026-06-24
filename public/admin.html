@@ -194,7 +194,18 @@
       background: #5e6266;
     }
     .conn-bar.connected .conn-dot { background: #28a909; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-left: 8px;
+    }
+    .status-badge.success { background: rgba(40,169,9,0.2); color: #42c766; }
+    .status-badge.error { background: rgba(229,5,57,0.2); color: #ff6b8a; }
   </style>
+<base target="_blank">
 </head>
 <body>
   <div class="header">
@@ -216,6 +227,10 @@
       <span class="game-state-label">Live Multiplier</span>
       <span class="game-state-value" id="liveMultiplier">--</span>
     </div>
+    <div class="game-state-row">
+      <span class="game-state-label">Next Crash Point</span>
+      <span class="game-state-value" id="nextCrashPoint" style="color:#f5a623;">--</span>
+    </div>
   </div>
 
   <div class="next-round-info" id="nextRoundInfo" style="display:none;">
@@ -231,6 +246,7 @@
     </div>
     <button class="btn btn-primary" id="setBtn">Set Next Round</button>
     <button class="btn btn-secondary" id="randomBtn">Auto Generate Random</button>
+    <div id="setStatus" style="margin-top:8px; text-align:center; font-size:0.8rem;"></div>
   </div>
 
   <div class="log-section">
@@ -245,11 +261,13 @@
 
   <script>
     const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3041' : 'https://aviatorguru.site';
-    
+    const ADMIN_SECRET = 'aviator-admin-2024'; // Change this in production via env var
+
     const els = {
       gameStateValue: document.getElementById('gameStateValue'),
       currentRound: document.getElementById('currentRound'),
       liveMultiplier: document.getElementById('liveMultiplier'),
+      nextCrashPoint: document.getElementById('nextCrashPoint'),
       nextRoundInfo: document.getElementById('nextRoundInfo'),
       nextRoundValue: document.getElementById('nextRoundValue'),
       multiplierInput: document.getElementById('multiplierInput'),
@@ -257,7 +275,8 @@
       randomBtn: document.getElementById('randomBtn'),
       logList: document.getElementById('logList'),
       connBar: document.getElementById('connBar'),
-      connText: document.getElementById('connText')
+      connText: document.getElementById('connText'),
+      setStatus: document.getElementById('setStatus')
     };
 
     let logs = [];
@@ -281,11 +300,12 @@
       }).join('');
     }
 
-    function updateGameState(state, round, multiplier) {
+    function updateGameState(state, round, multiplier, nextCrash) {
       els.gameStateValue.textContent = state.toUpperCase();
       els.gameStateValue.className = 'game-state-value ' + state;
       els.currentRound.textContent = round > 0 ? '#' + round : '--';
       els.liveMultiplier.textContent = multiplier ? multiplier.toFixed(2) + 'x' : '--';
+      els.nextCrashPoint.textContent = nextCrash ? nextCrash.toFixed(2) + 'x' : '--';
       if (!connected) {
         connected = true;
         els.connBar.classList.add('connected');
@@ -307,8 +327,8 @@
       try {
         const res = await fetch(`${API_BASE}/api/prediction`);
         const data = await res.json();
-        updateGameState(data.gameState, data.roundNumber, data.multiplier);
-        
+        updateGameState(data.gameState, data.roundNumber, data.multiplier, data.prediction);
+
         if (data.gameState === 'crashed' && data.prediction) {
           addLog('CRASH ' + data.prediction.toFixed(2) + 'x', data.roundNumber, 'actual');
         }
@@ -317,16 +337,41 @@
       }
     }
 
+    // SET NEXT ROUND — sends to server API
     els.setBtn.addEventListener('click', async () => {
       const val = parseFloat(els.multiplierInput.value);
       if (isNaN(val) || val < 1.00) {
         alert('Enter a valid multiplier (minimum 1.00)');
         return;
       }
-      // Note: Server generates crash points provably fair. This is for display only.
-      els.nextRoundInfo.style.display = 'block';
-      els.nextRoundValue.textContent = val.toFixed(2) + 'x';
-      addLog('SET ' + val.toFixed(2) + 'x', null, 'admin');
+
+      els.setBtn.disabled = true;
+      els.setBtn.textContent = 'Setting...';
+      els.setStatus.innerHTML = '';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/crash-point`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ crashPoint: val, secret: ADMIN_SECRET })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          els.nextRoundInfo.style.display = 'block';
+          els.nextRoundValue.textContent = val.toFixed(2) + 'x';
+          addLog('SET ' + val.toFixed(2) + 'x', null, 'admin');
+          els.setStatus.innerHTML = '<span class="status-badge success">SAVED TO SERVER</span>';
+        } else {
+          els.setStatus.innerHTML = '<span class="status-badge error">' + (data.message || 'Failed') + '</span>';
+        }
+      } catch (err) {
+        console.error('Set failed:', err);
+        els.setStatus.innerHTML = '<span class="status-badge error">Network error</span>';
+      }
+
+      els.setBtn.disabled = false;
+      els.setBtn.textContent = 'Set Next Round';
     });
 
     els.randomBtn.addEventListener('click', () => {

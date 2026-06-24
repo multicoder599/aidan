@@ -32,7 +32,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Rate limiting — generous general limit, stricter auth
+// Rate limiting
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10000,
@@ -253,7 +253,8 @@ let currentGameState = {
   roundNumber: 0
 };
 let roundCounter = 0;
-const activeBets = new Map(); // userId -> [{amount, panelId, autoCashOut, cashedOut}]
+let adminCrashPoint = null; // Admin override for next round
+const activeBets = new Map();
 
 function generateCrashPoint() {
   const serverSeed = crypto.randomBytes(32).toString('hex');
@@ -268,9 +269,21 @@ function generateCrashPoint() {
 async function startNewRound() {
   if (currentGameState.status === 'flying') return;
   roundCounter++;
-  const { crashPoint, serverSeed } = generateCrashPoint();
+
+  // Use admin override if set, otherwise generate provably fair
+  let crashPoint, serverSeed;
+  if (adminCrashPoint !== null && adminCrashPoint >= 1.00) {
+    crashPoint = adminCrashPoint;
+    serverSeed = 'admin-override-' + crypto.randomBytes(16).toString('hex');
+    adminCrashPoint = null; // consume it
+  } else {
+    const generated = generateCrashPoint();
+    crashPoint = generated.crashPoint;
+    serverSeed = generated.serverSeed;
+  }
+
   const roundId = `RND-${Date.now()}-${roundCounter}`;
-  
+
   await GameHistory.create({
     roundId,
     crashPoint,
@@ -283,7 +296,7 @@ async function startNewRound() {
     roundId,
     status: 'waiting',
     crashPoint,
-    nextCrashPoint: crashPoint,
+    nextCrashPoint: crashPoint, // EXPOSED for predictor/admin
     startTime: Date.now(),
     elapsedMs: 0,
     multiplier: 1.00,
@@ -292,21 +305,22 @@ async function startNewRound() {
 
   // 5-second countdown then fly
   setTimeout(() => {
+    if (currentGameState.roundId !== roundId) return; // safety
     currentGameState.status = 'flying';
     currentGameState.startTime = Date.now();
     GameHistory.findOneAndUpdate({ roundId }, { status: 'flying' }).exec();
-    
+
     // Auto-crash at predetermined point
     const flyDuration = Math.log(currentGameState.crashPoint) / 0.15 * 1000;
-    setTimeout(() => crashRound(), flyDuration + 100);
+    setTimeout(() => crashRound(roundId), flyDuration + 100);
   }, 5000);
 }
 
-async function crashRound() {
-  if (currentGameState.status !== 'flying') return;
+async function crashRound(roundId) {
+  if (currentGameState.status !== 'flying' || currentGameState.roundId !== roundId) return;
   currentGameState.status = 'crashed';
   currentGameState.multiplier = currentGameState.crashPoint;
-  
+
   await GameHistory.findOneAndUpdate(
     { roundId: currentGameState.roundId },
     { status: 'crashed', endTime: new Date() }
@@ -336,7 +350,7 @@ async function crashRound() {
 // Start first round
 startNewRound();
 
-// Game loop ticker (updates multiplier)
+// Game loop ticker
 setInterval(() => {
   if (currentGameState.status === 'flying') {
     const elapsed = (Date.now() - currentGameState.startTime) / 1000;
@@ -344,12 +358,39 @@ setInterval(() => {
     currentGameState.elapsedMs = Date.now() - currentGameState.startTime;
   } else if (currentGameState.status === 'waiting') {
     currentGameState.elapsedMs = Date.now() - currentGameState.startTime;
+  } else if (currentGameState.status === 'crashed') {
+    currentGameState.elapsedMs = Date.now() - currentGameState.startTime;
   }
 }, 50);
 
 // ═══════════════════════════════════════════════
 // ROUTES
 // ═══════════════════════════════════════════════
+
+// ── Admin Crash Point Override ──
+app.post('/api/admin/crash-point', (req, res) => {
+  const { crashPoint, secret } = req.body;
+  const adminSecret = process.env.ADMIN_SECRET || 'aviator-admin-2024';
+
+  if (secret !== adminSecret) {
+    return res.status(403).json({ success: false, message: 'Invalid admin secret' });
+  }
+
+  const cp = parseFloat(crashPoint);
+  if (isNaN(cp) || cp < 1.00) {
+    return res.status(400).json({ success: false, message: 'Invalid crash point (minimum 1.00)' });
+  }
+
+  // Only allow setting if we're in waiting or crashed/cooldown state
+  if (currentGameState.status === 'flying') {
+    return res.status(400).json({ success: false, message: 'Cannot set crash point while round is flying' });
+  }
+
+  adminCrashPoint = cp;
+  currentGameState.nextCrashPoint = cp;
+  console.log(`[ADMIN] Next crash point set to ${cp}x`);
+  res.json({ success: true, message: `Next round crash point set to ${cp}x`, crashPoint: cp });
+});
 
 // ── Auth ──
 app.post('/api/auth/register', async (req, res) => {
@@ -624,7 +665,6 @@ app.post('/api/game/bet', protect, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (user.totalBalance < amount) return res.status(400).json({ success: false, message: 'Insufficient balance' });
 
-    // Deduct from bonus first, then real balance
     let fromBonus = Math.min(amount, user.bonusBalance);
     let fromReal = amount - fromBonus;
     user.bonusBalance -= fromBonus;
@@ -643,7 +683,6 @@ app.post('/api/game/bet', protect, async (req, res) => {
       afterBalance: user.totalBalance
     });
 
-    // Track active bet
     if (!activeBets.has(req.user.id.toString())) activeBets.set(req.user.id.toString(), []);
     activeBets.get(req.user.id.toString()).push({
       amount,
@@ -680,9 +719,6 @@ app.post('/api/game/cashout', protect, async (req, res) => {
 
     bet.cashedOut = true;
     const winAmount = bet.amount * multiplier;
-
-    // Deduct from bonus balance first if bonus was used
-    let bonusWin = Math.min(winAmount, bet.amount * (bet.amount > user.balance + bet.amount ? 1 : 0)); // simplified
     user.balance += winAmount;
     user.totalWon += winAmount;
     user.gamesPlayed += 1;
@@ -729,7 +765,7 @@ app.get('/api/game/history', async (req, res) => {
 app.get('/api/prediction', (req, res) => {
   res.json({
     gameState: currentGameState.status,
-    prediction: currentGameState.nextCrashPoint,
+    prediction: currentGameState.nextCrashPoint, // Always visible during waiting
     currentCrashPoint: currentGameState.status === 'flying' ? currentGameState.crashPoint : null,
     elapsedMs: currentGameState.elapsedMs,
     waitElapsedMs: currentGameState.status === 'waiting' ? currentGameState.elapsedMs : 0,
@@ -781,7 +817,6 @@ app.post('/api/activate', (req, res) => res.json({ success: true, valid: true })
 // ═══════════════════════════════════════════════
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Explicit routes for predictor and admin
 app.get('/predictor', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'predictor.html'));
 });
@@ -789,7 +824,6 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -798,22 +832,20 @@ app.get('/api/health', (req, res) => {
     database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     uptime: process.uptime(),
     gameState: currentGameState.status,
-    roundNumber: currentGameState.roundNumber
+    roundNumber: currentGameState.roundNumber,
+    nextCrashPoint: currentGameState.nextCrashPoint
   });
 });
 
-// Fallback for SPA
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({ success: false, message: err.message || 'Internal Server Error' });
 });
 
-// Start server
 app.listen(PORT, '0.0.0.0', () => {
   console.log('═══════════════════════════════════════════');
   console.log('  🚀 AVIATOR BACKEND SERVER RUNNING');

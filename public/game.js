@@ -1,6 +1,7 @@
 /*
- * GAME ENGINE — js/game.js (Standalone Fixed)
- * Server-backed with robust standalone fallback.
+ * GAME ENGINE — js/game.js (Server-Authoritative)
+ * The server is the ONLY source of truth for crash points.
+ * Client never generates local crash points.
  */
 
 const SERVER_URL = (typeof window !== 'undefined' && window.API_BASE_URL) ? window.API_BASE_URL.replace('/api', '') : 'https://aviatorguru.site';
@@ -18,17 +19,12 @@ class GameEngine {
         this.betManager = betManager;
         this.soundManager = soundManager;
 
-        this.adminChannel = new BroadcastChannel('aviator_game_channel');
-        this.adminChannel.onmessage = (e) => this._handleAdminMessage(e);
-
         this.roundNumber = 0;
         this.serverCrashPoint = null;
-        this.adminCrashPoint = null;
         this.crashPoint = 2.00;
 
         this._currentRoundId = 0;
         this._crashPointLocked = false;
-        this._localFallbackTimer = null;
 
         this.state = GameStates.WAITING;
         this.multiplier = 1.00;
@@ -47,43 +43,13 @@ class GameEngine {
         this._historyListeners = [];
         this._progressListeners = [];
 
-        console.log('[Game] Engine ready — Standalone Fixed | Sound:', soundManager ? 'enabled' : 'disabled');
+        console.log('[Game] Engine ready — Server Authoritative | Sound:', soundManager ? 'enabled' : 'disabled');
 
-        setInterval(() => this._sendHeartbeat(), 10000);
-        setInterval(() => this._syncStateFromServer(), 2000);
+        setInterval(() => this._syncStateFromServer(), 1000);
 
         this._lastSyncTime = Date.now();
         this._roundStartTime = null;
         this._gameLoopRunning = false;
-
-        this._gameSSE = null;
-        this._connectGameSSE();
-
-        this._setupVisibilityHandler();
-    }
-
-    _setupVisibilityHandler() {
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                console.log('[Game] Tab visible again - forcing sync');
-                this._syncStateFromServer();
-                if (!this._gameSSE || this._gameSSE.readyState !== EventSource.OPEN) {
-                    this._connectGameSSE();
-                }
-            }
-        });
-        window.addEventListener('focus', () => {
-            console.log('[Game] Window focused - forcing sync');
-            this._syncStateFromServer();
-            if (!this._gameSSE || this._gameSSE.readyState !== EventSource.OPEN) {
-                this._connectGameSSE();
-            }
-        });
-    }
-
-    async _sendHeartbeat() {
-        try { await fetch(SERVER_URL + '/api/heartbeat', { method: 'POST' }); }
-        catch (e) { /* silent */ }
     }
 
     onStateChange(cb) { this._stateListeners.push(cb); }
@@ -98,152 +64,71 @@ class GameEngine {
     _emitHistory() { this._historyListeners.forEach(cb => cb([...this.history])); }
     _emitProgress(pct, s) { this._progressListeners.forEach(cb => cb(pct, s)); }
 
-    _generateLocalCrashPoint() {
-        const r = Math.random();
-        if (r < 0.4) return 1.00 + Math.random() * 1.00;
-        if (r < 0.7) return 2.00 + Math.random() * 3.00;
-        if (r < 0.9) return 5.00 + Math.random() * 5.00;
-        return 10.00 + Math.random() * 90.00;
-    }
-
-    async _requestCrashPointFromServer(round, retryCount = 0) {
-        try {
-            const res = await fetch(SERVER_URL + '/api/next', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ round })
-            });
-            const data = await res.json();
-            if (data.crashPoint) {
-                this.serverCrashPoint = data.crashPoint;
-                this._crashPointLocked = true;
-                console.log(`[Game] Locked crash point from server: ${this.serverCrashPoint}x`);
-                this.adminChannel.postMessage({
-                    type: 'PREDICTION_UPDATE',
-                    data: { crashPoint: data.crashPoint, round: round, source: 'server' }
-                });
-            } else if (!res.ok && retryCount < 3) {
-                const delay = 1000 * (retryCount + 1);
-                console.log(`[Game] /api/next failed (attempt ${retryCount + 1}), retrying in ${delay}ms...`);
-                setTimeout(() => this._requestCrashPointFromServer(round, retryCount + 1), delay);
-            }
-        } catch (e) {
-            if (retryCount < 3) {
-                const delay = 1000 * (retryCount + 1);
-                console.log(`[Game] /api/next error (attempt ${retryCount + 1}), retrying in ${delay}ms...`);
-                setTimeout(() => this._requestCrashPointFromServer(round, retryCount + 1), delay);
-            } else {
-                console.error('[Game] Failed to request next round after 3 retries:', e);
-            }
-        }
-    }
-
     async _syncStateFromServer() {
         try {
             const res = await fetch(SERVER_URL + '/api/prediction');
             const data = await res.json();
             if (!res.ok) return;
-            const now = Date.now();
-            const timeSinceLastSync = now - this._lastSyncTime;
-            const wasInBackground = timeSinceLastSync > 15000;
-            this._lastSyncTime = now;
-            if (wasInBackground) {
-                console.log(`[Game] Recovering from background (${(timeSinceLastSync / 1000).toFixed(1)}s gap)`);
+
+            this._lastSyncTime = Date.now();
+
+            // Always update the known next crash point from server
+            if (data.prediction && data.prediction >= 1.00) {
+                this.serverCrashPoint = data.prediction;
+                this._crashPointLocked = true;
+                console.log(`[Game] Server next crash point: ${data.prediction}x (state: ${data.gameState})`);
             }
+
             const isRoundOverLocally = (this.state === GameStates.CRASHED || this.state === GameStates.COOLDOWN);
-            const waitingElapsed = (this.state === GameStates.WAITING)
-                ? (performance.now() - this.stateStartTime) / 1000
-                : 0;
+
             if (data.gameState === 'waiting') {
-                if (this.state === GameStates.FLYING) return;
-                if (isRoundOverLocally) return;
-                if (data.prediction && this.serverCrashPoint === null) {
-                    this.serverCrashPoint = data.prediction;
-                    this._crashPointLocked = true;
-                    console.log(`[Game] Preloaded crash point from server: ${data.prediction}x`);
-                    this.adminChannel.postMessage({
-                        type: 'PREDICTION_UPDATE',
-                        data: { crashPoint: data.prediction, round: this.roundNumber, source: 'server' }
-                    });
-                }
+                if (this.state === GameStates.FLYING) return; // Don't interrupt flying
+                if (isRoundOverLocally) return; // Still showing crash
                 if (this.state !== GameStates.WAITING) {
-                    console.log('[Game] Transitioning to WAITING');
+                    console.log('[Game] Server says WAITING — transitioning');
                     this._transitionToWaiting();
                 }
+                // Update countdown based on server elapsed
+                const waitElapsed = data.waitElapsedMs || 0;
+                this.countdown = Math.max(0, 5 - (waitElapsed / 1000));
+                this.stateStartTime = performance.now() - waitElapsed;
             } else if (data.gameState === 'flying') {
                 if (isRoundOverLocally) return;
-                if (this.state === GameStates.FLYING) return;
-                if (this.state === GameStates.WAITING && waitingElapsed < 4.5) {
-                    if (data.currentCrashPoint && this.serverCrashPoint !== data.currentCrashPoint) {
-                        this.serverCrashPoint = data.currentCrashPoint;
-                        console.log(`[Game] Pre-loaded crash point from server: ${this.serverCrashPoint}x`);
+                if (this.state === GameStates.FLYING) {
+                    // Already flying, just sync crash point if we didn't have it
+                    if (data.currentCrashPoint && this.crashPoint !== data.currentCrashPoint) {
+                        this.crashPoint = data.currentCrashPoint;
                     }
                     return;
                 }
-                if (data.currentCrashPoint && this.serverCrashPoint !== data.currentCrashPoint) {
-                    this.serverCrashPoint = data.currentCrashPoint;
+                if (this.state === GameStates.WAITING) {
+                    // Server says fly — use the crash point we should have received
+                    if (this.serverCrashPoint !== null) {
+                        this.crashPoint = this.serverCrashPoint;
+                        this.serverCrashPoint = null;
+                        console.log(`[Game] Server flying — using crash point ${this.crashPoint}x`);
+                    } else {
+                        // Edge case: we missed the prediction. Try to get it now.
+                        try {
+                            const nextRes = await fetch(SERVER_URL + '/api/next', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({round: data.roundNumber}) });
+                            const nextData = await nextRes.json();
+                            if (nextData.crashPoint) {
+                                this.crashPoint = nextData.crashPoint;
+                                console.log(`[Game] Fetched crash point late: ${this.crashPoint}x`);
+                            }
+                        } catch (e) {
+                            console.warn('[Game] Could not fetch late crash point');
+                        }
+                    }
+                    this._transitionToFlying(false, data.elapsedMs);
                 }
-                console.log('[Game] Server flying - syncing from waiting');
-                this._transitionToFlying(false, data.elapsedMs);
+            } else if (data.gameState === 'crashed') {
+                if (this.state === GameStates.CRASHED || this.state === GameStates.COOLDOWN) return;
+                // Force crash at server's crash point
+                if (data.currentCrashPoint) this.crashPoint = data.currentCrashPoint;
+                this._startCrashed();
             }
-        } catch (e) { /* silent — connection issues expected in standalone */ }
-    }
-
-    _connectGameSSE() {
-        if (this._gameSSE) { try { this._gameSSE.close(); } catch (e) {} }
-        const streamUrl = SERVER_URL + '/api/predictor-stream';
-        try { this._gameSSE = new EventSource(streamUrl); }
-        catch (e) { console.warn('[Game] SSE creation failed:', e); return; }
-        this._gameSSE.onopen = () => { console.log('[Game] SSE connected'); };
-        this._gameSSE.onmessage = (event) => {
-            try { const data = JSON.parse(event.data); this._handleSSEData(data); }
-            catch (e) { console.warn('[Game] SSE parse error:', e); }
-        };
-        this._gameSSE.onerror = () => {
-            if (this._gameSSE && this._gameSSE.readyState === EventSource.CLOSED) {
-                console.log('[Game] SSE closed — reconnecting in 3s...');
-                setTimeout(() => this._connectGameSSE(), 3000);
-            }
-        };
-    }
-
-    _handleSSEData(data) {
-        const isRoundOverLocally = (this.state === GameStates.CRASHED || this.state === GameStates.COOLDOWN);
-        const waitingElapsed = (this.state === GameStates.WAITING)
-            ? (performance.now() - this.stateStartTime) / 1000
-            : 0;
-        if (data.gameState === 'waiting') {
-            if (this.state === GameStates.FLYING) return;
-            if (isRoundOverLocally) return;
-            if (data.prediction && this.serverCrashPoint === null) {
-                this.serverCrashPoint = data.prediction;
-                this._crashPointLocked = true;
-                console.log(`[Game][SSE] Preloaded crash point: ${data.prediction}x`);
-                this.adminChannel.postMessage({
-                    type: 'PREDICTION_UPDATE',
-                    data: { crashPoint: data.prediction, round: this.roundNumber, source: 'server' }
-                });
-            }
-            if (this.state !== GameStates.WAITING) {
-                console.log('[Game][SSE] Transitioning to WAITING');
-                this._transitionToWaiting();
-            }
-        } else if (data.gameState === 'flying') {
-            if (isRoundOverLocally) return;
-            if (this.state === GameStates.FLYING) return;
-            if (this.state === GameStates.WAITING && waitingElapsed < 4.5) {
-                if (data.currentCrashPoint && this.serverCrashPoint !== data.currentCrashPoint) {
-                    this.serverCrashPoint = data.currentCrashPoint;
-                    console.log(`[Game][SSE] Pre-loaded crash point: ${this.serverCrashPoint}x`);
-                }
-                return;
-            }
-            if (data.currentCrashPoint && this.serverCrashPoint !== data.currentCrashPoint) {
-                this.serverCrashPoint = data.currentCrashPoint;
-            }
-            console.log('[Game][SSE] Server flying — syncing');
-            this._transitionToFlying(false, data.elapsedMs);
-        }
+        } catch (e) { /* silent — connection issues expected */ }
     }
 
     _transitionToWaiting() {
@@ -254,19 +139,6 @@ class GameEngine {
     }
 
     _transitionToFlying(wasInBackground, elapsedMs) {
-        if (this.serverCrashPoint !== null && this.state !== GameStates.FLYING) {
-            this.crashPoint = this.serverCrashPoint;
-            this.serverCrashPoint = null;
-            this.adminCrashPoint = null;
-            console.log(`[Game] Sync transition: Using SERVER value ${this.crashPoint.toFixed(2)}x`);
-        } else if (this.adminCrashPoint !== null && this.state !== GameStates.FLYING) {
-            this.crashPoint = this.adminCrashPoint;
-            this.adminCrashPoint = null;
-            console.log(`[Game] Sync transition: Using BroadcastChannel value ${this.crashPoint.toFixed(2)}x`);
-        } else if (this.state !== GameStates.FLYING) {
-            this.crashPoint = this._generateLocalCrashPoint();
-            console.warn(`[Game] Sync transition: No server value, local fallback ${this.crashPoint.toFixed(2)}x`);
-        }
         if (this.state !== GameStates.FLYING) {
             this._setState(GameStates.FLYING);
         }
@@ -278,81 +150,10 @@ class GameEngine {
                 this.stateStartTime = performance.now();
             }
         }
-        this._ensureGameLoopRunning();
-    }
-
-    _ensureGameLoopRunning() {
-        if (!this.rafId) {
-            console.log('[Game] Restarting game loop');
-            this._loop();
-        }
+        if (!this.rafId) this._loop();
     }
 
     _updateWaitingUI() { /* Logic handled in render() */ }
-
-    async _notifyServerFlying(round, crashPoint) {
-        try {
-            await fetch(SERVER_URL + '/api/flying', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ round, crashPoint })
-            });
-        } catch (err) { /* non-critical */ }
-    }
-
-    async _notifyServerComplete(round, crashPoint) {
-        try {
-            await fetch(SERVER_URL + '/api/complete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ round, crashPoint })
-            });
-        } catch (err) { /* non-critical */ }
-    }
-
-    async _notifyServerState(state) {
-        try {
-            await fetch(SERVER_URL + '/api/state', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ state })
-            });
-        } catch (err) { /* non-critical */ }
-    }
-
-    _handleAdminMessage(event) {
-        const { type, data } = event.data;
-        switch (type) {
-            case 'NEXT_CRASH_POINT':
-                if (this.serverCrashPoint === null) {
-                    const cp = parseFloat(data.crashPoint);
-                    if (!isNaN(cp) && cp >= 1.0) {
-                        this.adminCrashPoint = cp;
-                        console.log('[Game] BroadcastChannel crash point stored:', this.adminCrashPoint.toFixed(2));
-                        this.adminChannel.postMessage({
-                            type: 'PREDICTION_UPDATE',
-                            data: {
-                                crashPoint: cp,
-                                round: data.round || (this.roundNumber + 1),
-                                source: 'admin'
-                            }
-                        });
-                    }
-                }
-                break;
-            case 'PONG':
-                break;
-            case 'SET_BALANCE':
-                if (data && data.amount !== undefined) { this.betManager.setBalance(data.amount); }
-                break;
-            case 'SET_CURRENCY':
-                if (data && data.code) { this.betManager.setCurrency(data.code); }
-                break;
-            case 'SET_USERNAME':
-                if (data && data.name) { this.betManager.setUsername(data.name); }
-                break;
-        }
-    }
 
     _setState(newState) {
         const oldState = this.state;
@@ -361,10 +162,6 @@ class GameEngine {
         this._emitStateChange(newState, oldState, {
             multiplier: this.multiplier,
             crashPoint: this.crashPoint
-        });
-        this.adminChannel.postMessage({
-            type: 'GAME_STATE',
-            data: { state: newState, round: this.roundNumber, multiplier: this.multiplier }
         });
     }
 
@@ -376,79 +173,25 @@ class GameEngine {
         this.betManager.clearBets();
         this.renderer.lastPlanePos = null;
         this._crashPointLocked = false;
-
-        this._requestCrashPointFromServer(this.roundNumber);
-
-        this.adminChannel.postMessage({
-            type: 'REQUEST_CRASH_POINT',
-            data: { round: this.roundNumber }
-        });
-
-        // STANDALONE FIX: Generate local fallback immediately so the game never stalls
-        // and the predictor gets maximum lead time. Server/admin can override later.
-        if (this.serverCrashPoint === null && this.adminCrashPoint === null) {
-            const localCrash = this._generateLocalCrashPoint();
-            this.adminCrashPoint = localCrash;
-            console.log(`[Game] Standalone fallback generated for round ${this.roundNumber}: ${localCrash.toFixed(2)}x`);
-            this.adminChannel.postMessage({
-                type: 'PREDICTION_UPDATE',
-                data: { crashPoint: localCrash, round: this.roundNumber, source: 'local' }
-            });
-        }
-
-        // Safety net: if somehow nothing is available after 8 seconds, force local
-        if (this._localFallbackTimer) clearTimeout(this._localFallbackTimer);
-        this._localFallbackTimer = setTimeout(() => {
-            if (this.state === GameStates.WAITING && this.serverCrashPoint === null && this.adminCrashPoint === null) {
-                const emergency = this._generateLocalCrashPoint();
-                this.adminCrashPoint = emergency;
-                console.log(`[Game] Emergency fallback triggered: ${emergency.toFixed(2)}x`);
-                this.adminChannel.postMessage({
-                    type: 'PREDICTION_UPDATE',
-                    data: { crashPoint: emergency, round: this.roundNumber, source: 'emergency' }
-                });
-            }
-        }, 8000);
-
-        fetch(SERVER_URL + '/api/state', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ state: 'waiting' })
-        }).catch(() => { });
-
-        if (this.soundManager) { this.soundManager.stopBackground(); }
+        // Server already has the crash point ready — we just wait for it via polling
     }
 
     _startFlying() {
-        if (this._localFallbackTimer) {
-            clearTimeout(this._localFallbackTimer);
-            this._localFallbackTimer = null;
-        }
+        // Crash point MUST come from server. If we don't have it, we shouldn't fly.
         if (this.serverCrashPoint !== null) {
             this.crashPoint = this.serverCrashPoint;
             this.serverCrashPoint = null;
-            this.adminCrashPoint = null;
             console.log(`[Game] Round ${this.roundNumber}: Using SERVER value ${this.crashPoint.toFixed(2)}x`);
-        } else if (this.adminCrashPoint !== null) {
-            this.crashPoint = this.adminCrashPoint;
-            this.adminCrashPoint = null;
-            console.log(`[Game] Round ${this.roundNumber}: Using BroadcastChannel value ${this.crashPoint.toFixed(2)}x`);
         } else {
-            this.crashPoint = this._generateLocalCrashPoint();
-            console.warn(`[Game] Round ${this.roundNumber}: No server/admin value, local fallback ${this.crashPoint.toFixed(2)}x`);
+            console.warn(`[Game] Round ${this.roundNumber}: No server crash point yet! Waiting...`);
+            // Don't start flying — the sync loop will catch up when server point arrives
+            return;
         }
-
-        this._notifyServerFlying(this.roundNumber, this.crashPoint);
-        this.adminChannel.postMessage({
-            type: 'FLYING_WITH',
-            data: { round: this.roundNumber, crashPoint: this.crashPoint }
-        });
 
         this._setState(GameStates.FLYING);
         this.multiplier = 1.00;
         console.log(`[Game] Flying -> crash at ${this.crashPoint.toFixed(2)}x`);
-
-        if (this.soundManager) { this.soundManager.startBackground(); }
+        if (this.soundManager) this.soundManager.startBackground();
     }
 
     _startCrashed() {
@@ -460,39 +203,14 @@ class GameEngine {
         this._emitHistory();
         this._setState(GameStates.CRASHED);
         this.renderer.crashAnimProgress = 0;
-        this._notifyServerState('crashed');
         if (this.soundManager) {
             this.soundManager.playCrash();
             this.soundManager.stopBackground();
         }
-
-        // PRE-LOAD NEXT ROUND: request crash point early so predictor has 10s lead time
-        const nextRound = this.roundNumber + 1;
-        setTimeout(() => {
-            if (this.serverCrashPoint === null && this.adminCrashPoint === null) {
-                const localCrash = this._generateLocalCrashPoint();
-                this.adminCrashPoint = localCrash;
-                console.log(`[Game] Pre-loaded local fallback for round ${nextRound}: ${localCrash.toFixed(2)}x`);
-                this.adminChannel.postMessage({
-                    type: 'PREDICTION_UPDATE',
-                    data: { crashPoint: localCrash, round: nextRound, source: 'local' }
-                });
-            }
-            this._requestCrashPointFromServer(nextRound);
-            this.adminChannel.postMessage({
-                type: 'REQUEST_CRASH_POINT',
-                data: { round: nextRound }
-            });
-        }, 0);
     }
 
     _startCooldown() {
         this._setState(GameStates.COOLDOWN);
-        this._notifyServerComplete(this.roundNumber, this.crashPoint);
-        this.adminChannel.postMessage({
-            type: 'ROUND_COMPLETE',
-            data: { round: this.roundNumber, crashPoint: this.crashPoint }
-        });
     }
 
     async start() {
@@ -507,15 +225,14 @@ class GameEngine {
                 return;
             }
             if (data.gameState === 'flying' && data.currentCrashPoint) {
-                this.serverCrashPoint = data.currentCrashPoint;
-                this._crashPointLocked = true;
-                this.roundNumber++;
+                this.crashPoint = data.currentCrashPoint;
+                this.roundNumber = data.roundNumber || 1;
                 console.log(`[Game] Joining mid-flight: ${data.currentCrashPoint}x (${data.elapsedMs}ms in)`);
                 this._transitionToFlying(false, data.elapsedMs);
             } else if (data.gameState === 'waiting' && data.prediction) {
                 this.serverCrashPoint = data.prediction;
                 this._crashPointLocked = true;
-                this.roundNumber++;
+                this.roundNumber = data.roundNumber || 1;
                 this._setState(GameStates.WAITING);
                 this.multiplier = 1.00;
                 this.countdown = 5;
@@ -523,16 +240,16 @@ class GameEngine {
                 this.renderer.lastPlanePos = null;
                 const waitElapsed = data.waitElapsedMs || 0;
                 this.stateStartTime = performance.now() - waitElapsed;
-                console.log(`[Game] Joining countdown: ${data.prediction}x (${(waitElapsed / 1000).toFixed(1)}s in)`);
-            } else if (data.gameState === 'crashed' && data.prediction) {
-                this.crashPoint = data.prediction;
-                this.lastCrashMultiplier = data.prediction;
-                this.roundNumber++;
+                console.log(`[Game] Joining countdown: ${data.prediction}x (${(waitElapsed/1000).toFixed(1)}s in)`);
+            } else if (data.gameState === 'crashed' && data.currentCrashPoint) {
+                this.crashPoint = data.currentCrashPoint;
+                this.lastCrashMultiplier = data.currentCrashPoint;
+                this.roundNumber = data.roundNumber || 1;
                 this._setState(GameStates.CRASHED);
                 this.renderer.crashAnimProgress = 1;
                 const crashElapsed = data.crashElapsedMs || 0;
                 this.stateStartTime = performance.now() - crashElapsed;
-                console.log(`[Game] Joining crash display: ${data.prediction}x (${(crashElapsed / 1000).toFixed(1)}s in)`);
+                console.log(`[Game] Joining crash display: ${data.currentCrashPoint}x (${(crashElapsed/1000).toFixed(1)}s in)`);
             } else {
                 this._startWaiting();
             }
@@ -572,16 +289,11 @@ class GameEngine {
             this.lastCrashMultiplier
         );
         if (elapsed >= 5) {
-            if (this.serverCrashPoint !== null || this.adminCrashPoint !== null) {
-                this._startFlying();
-            } else if (elapsed >= 8) {
-                console.log('[Game] No crash point available after 8s — generating emergency fallback');
-                this.adminCrashPoint = this._generateLocalCrashPoint();
+            // Only fly if we have a server crash point
+            if (this.serverCrashPoint !== null || this.crashPoint > 1) {
                 this._startFlying();
             } else {
-                if (Math.floor(elapsed * 10) % 10 === 0) {
-                    console.log('[Game] Waiting for crash point...');
-                }
+                console.log('[Game] Waiting for server crash point...');
             }
         }
     }
