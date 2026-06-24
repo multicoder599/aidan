@@ -3,417 +3,395 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aviator Predictor</title>
+  <title>Aviator Predictor Pro v12.1.8</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #0a0e17;
+      background: #000;
       color: #fff;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
-      padding: 24px 16px;
+      overflow-x: hidden;
     }
     .header {
+      background: #e53935;
+      padding: 12px;
       text-align: center;
-      margin-bottom: 24px;
-    }
-    .header h1 {
-      font-size: 1.4rem;
-      font-weight: 800;
+      font-size: 0.85rem;
+      font-weight: 600;
       letter-spacing: 1px;
-      color: #e50539;
-      text-transform: uppercase;
     }
-    .header p {
-      font-size: 0.75rem;
-      color: #5e6266;
-      margin-top: 4px;
-    }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 20px;
-      background: #1b2024;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .status-badge .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #28a909;
-      animation: pulse 1.5s infinite;
-    }
-    .status-badge.waiting .dot { background: #f5a623; }
-    .status-badge.flying .dot { background: #e50539; animation: pulse 0.6s infinite; }
-    .status-badge.crashed .dot { background: #ef4444; }
-    .status-badge.cooldown .dot { background: #3b82f6; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.2); }
-    }
-    .prediction-card {
-      width: 100%;
-      max-width: 420px;
-      background: linear-gradient(180deg, #141c28, #0e1621);
-      border: 1px solid rgba(229, 5, 57, 0.3);
-      border-radius: 20px;
-      padding: 32px 24px;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(229,5,57,0.1);
-      margin-bottom: 20px;
+    .hero {
       position: relative;
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg, #1a0000 0%, #4a0000 50%, #1a0000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
-    .prediction-card::before {
+    .hero::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, #e50539, transparent);
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(229,57,53,0.3) 0%, transparent 70%);
     }
-    .prediction-label {
-      font-size: 0.8rem;
-      color: #9ea0a3;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 600;
-      margin-bottom: 12px;
+    .plane-img {
+      width: 280px;
+      height: auto;
+      filter: drop-shadow(0 0 20px rgba(229,57,53,0.8));
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
     }
-    .prediction-value {
-      font-size: 4.5rem;
-      font-weight: 900;
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    .choose-btn {
+      display: block;
+      width: 90%;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 14px;
+      background: #e53935;
       color: #fff;
-      line-height: 1;
-      text-shadow: 0 0 30px rgba(229,5,57,0.4);
-      transition: all 0.3s ease;
-    }
-    .prediction-value.pending {
-      color: #5e6266;
-      text-shadow: none;
-    }
-    .prediction-round {
-      font-size: 0.85rem;
-      color: #5e6266;
-      margin-top: 12px;
-      font-weight: 500;
-    }
-    .countdown-wrap {
-      width: 100%;
-      max-width: 420px;
-      background: #1b2024;
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .countdown-label {
-      font-size: 0.7rem;
-      color: #5e6266;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
       font-weight: 600;
+      text-align: center;
+      cursor: pointer;
     }
-    .countdown-bar {
-      height: 8px;
+    .sites-list {
+      padding: 0 16px 100px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .site-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .site-item:hover { opacity: 0.8; }
+    .site-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: contain;
       background: rgba(255,255,255,0.05);
-      border-radius: 4px;
-      overflow: hidden;
-      margin-bottom: 8px;
+      padding: 4px;
     }
-    .countdown-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #e50539, #ff6b8a);
-      border-radius: 4px;
-      transition: width 0.1s linear;
-      width: 100%;
-    }
-    .countdown-text {
-      font-size: 1.6rem;
-      font-weight: 800;
+    .site-name {
+      font-size: 1rem;
+      font-weight: 500;
       color: #fff;
+    }
+    .telegram-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #e53935;
+      padding: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+      z-index: 100;
+    }
+    .telegram-bar a {
+      color: #fff;
+      text-decoration: underline;
+    }
+    /* Activation Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: #111;
+      border: 1px solid rgba(229,57,53,0.3);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 360px;
       text-align: center;
     }
-    .history-section {
+    .modal-title {
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .modal-input {
       width: 100%;
-      max-width: 420px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid #e53935;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+    .modal-input::placeholder { color: #666; }
+    .modal-btns {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    .modal-btn {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 8px 16px;
+    }
+    .btn-cancel { color: #e53935; }
+    .btn-submit { color: #4caf50; font-weight: 600; }
+    
+    /* Predictor Screen */
+    .predictor-screen {
+      display: none;
+      padding: 20px;
+      text-align: center;
+    }
+    .predictor-screen.active { display: block; }
+    .aviator-logo-box {
+      border: 2px solid #8bc34a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      background: rgba(139,195,74,0.05);
+    }
+    .aviator-logo-box img {
+      width: 200px;
+      filter: drop-shadow(0 0 10px rgba(229,57,53,0.5));
+    }
+    .vpn-ring {
+      width: 180px;
+      height: 180px;
+      border: 4px solid #4caf50;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px;
+      position: relative;
+    }
+    .vpn-ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 4px solid transparent;
+      border-top-color: #8bc34a;
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .vpn-text {
+      color: #e53935;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .start-btn {
+      width: 200px;
+      padding: 16px;
+      background: #8bc34a;
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .prediction-result {
+      display: none;
+      margin-top: 30px;
+    }
+    .prediction-result.active { display: block; }
+    .pred-value {
+      font-size: 4rem;
+      font-weight: 900;
+      color: #e53935;
+      text-shadow: 0 0 30px rgba(229,57,53,0.5);
+    }
+    .pred-label {
+      color: #888;
+      font-size: 0.9rem;
       margin-top: 8px;
     }
-    .history-title {
-      font-size: 0.75rem;
-      color: #5e6266;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-    .history-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 10px;
-      margin-bottom: 6px;
-      font-size: 0.85rem;
-    }
-    .history-row .round { color: #5e6266; font-weight: 500; }
-    .history-row .mult { font-weight: 800; }
-    .history-row .mult.blue { color: #41b0ee; }
-    .history-row .mult.purple { color: #913ef8; }
-    .history-row .mult.pink { color: #c017b4; }
-    .connection-status {
-      position: fixed;
-      bottom: 16px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      background: rgba(0,0,0,0.6);
-      border-radius: 100px;
-      font-size: 0.7rem;
-      color: #5e6266;
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-    .connection-status.connected { color: #28a909; }
-    .connection-status.connected .conn-dot { background: #28a909; }
-    .conn-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #5e6266;
-    }
-    .accuracy-box {
-      width: 100%;
-      max-width: 420px;
-      background: rgba(40, 169, 9, 0.08);
-      border: 1px solid rgba(40, 169, 9, 0.2);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .accuracy-label {
-      font-size: 0.75rem;
-      color: #9ea0a3;
-    }
-    .accuracy-value {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #28a909;
+    .back-btn {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
     }
   </style>
-<base target="_blank">
 </head>
 <body>
-  <div class="header">
-    <h1>Aviator Predictor</h1>
-    <p>Next Round Intelligence</p>
-  </div>
-
-  <div class="status-badge" id="statusBadge">
-    <span class="dot"></span>
-    <span id="statusText">Connecting...</span>
-  </div>
-
-  <div class="prediction-card" id="predictionCard">
-    <div class="prediction-label">Predicted Multiplier</div>
-    <div class="prediction-value pending" id="predictionValue">--.--</div>
-    <div class="prediction-round" id="predictionRound">Waiting for game...</div>
-  </div>
-
-  <div class="countdown-wrap" id="countdownWrap" style="display:none;">
-    <div class="countdown-label">Time Until Next Round</div>
-    <div class="countdown-bar">
-      <div class="countdown-fill" id="countdownFill"></div>
+  <div class="header">AVIATOR PREDICTOR PRO v12.1.8</div>
+  
+  <!-- Site Selection Screen -->
+  <div id="siteScreen">
+    <div class="hero">
+      <svg class="plane-img" viewBox="0 0 200 120" fill="none">
+        <path d="M180 60 L140 40 L100 50 L40 20 L20 25 L50 55 L20 60 L50 65 L20 95 L40 100 L100 70 L140 80 Z" fill="#e53935" stroke="#ff5252" stroke-width="2"/>
+        <ellipse cx="45" cy="60" rx="8" ry="20" fill="#fff" opacity="0.3" transform="rotate(-20 45 60)"/>
+        <circle cx="165" cy="60" r="3" fill="#fff"/>
+      </svg>
     </div>
-    <div class="countdown-text" id="countdownText">5.0s</div>
+    
+    <button class="choose-btn" onclick="showActivation()">Choose Your Betting Site</button>
+    
+    <div class="sites-list" id="sitesList"></div>
   </div>
 
-  <div class="accuracy-box">
-    <span class="accuracy-label">Prediction Accuracy</span>
-    <span class="accuracy-value" id="accuracyValue">--%</span>
+  <!-- Activation Modal -->
+  <div class="modal-overlay" id="activationModal">
+    <div class="modal-card">
+      <div class="modal-title">Enter activation key</div>
+      <input type="text" class="modal-input" id="activationInput" placeholder="Enter activation key" maxlength="20">
+      <div class="modal-btns">
+        <button class="modal-btn btn-cancel" onclick="hideActivation()">Cancel</button>
+        <button class="modal-btn btn-submit" onclick="submitActivation()">Submit</button>
+      </div>
+    </div>
   </div>
 
-  <div class="history-section">
-    <div class="history-title">Recent History</div>
-    <div id="historyList"></div>
+  <!-- Predictor Screen -->
+  <div class="predictor-screen" id="predictorScreen">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="aviator-logo-box">
+      <svg viewBox="0 0 200 80" fill="none">
+        <path d="M20 40 L60 20 L100 35 L160 10 L180 15 L140 40 L180 65 L160 70 L100 45 L60 60 Z" fill="#e53935"/>
+        <text x="100" y="75" text-anchor="middle" fill="#e53935" font-size="24" font-weight="bold" font-style="italic">Aviator</text>
+      </svg>
+    </div>
+    <div class="vpn-ring">
+      <span class="vpn-text">Connect VPN</span>
+    </div>
+    <button class="start-btn" onclick="startPrediction()">Start</button>
+    <div style="color:#888; font-size:0.85rem;">Join our telegram <a href="https://t.me/startaviator" style="color:#fff;">@startaviator</a></div>
+    
+    <div class="prediction-result" id="predictionResult">
+      <div class="pred-value" id="predValue">2.50x</div>
+      <div class="pred-label">Predicted Multiplier</div>
+      <div style="color:#4caf50; margin-top:10px; font-size:0.9rem;" id="predRound">Round #<span>--</span></div>
+    </div>
   </div>
 
-  <div class="connection-status" id="connStatus">
-    <span class="conn-dot"></span>
-    <span>Listening for game tab...</span>
+  <div class="telegram-bar">
+    Telegram: <a href="https://t.me/startaviator">@startaviator</a>
   </div>
 
   <script>
-    const channel = new BroadcastChannel('aviator_game_channel');
-    const els = {
-      statusBadge: document.getElementById('statusBadge'),
-      statusText: document.getElementById('statusText'),
-      predictionValue: document.getElementById('predictionValue'),
-      predictionRound: document.getElementById('predictionRound'),
-      countdownWrap: document.getElementById('countdownWrap'),
-      countdownFill: document.getElementById('countdownFill'),
-      countdownText: document.getElementById('countdownText'),
-      historyList: document.getElementById('historyList'),
-      connStatus: document.getElementById('connStatus'),
-      accuracyValue: document.getElementById('accuracyValue')
-    };
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3041' : 'https://aviatorguru.site';
+    
+    const sites = [
+      { name: 'SportyBet', logo: '🔴' },
+      { name: 'Betway', logo: '⚫' },
+      { name: 'LottoStar', logo: '🌟' },
+      { name: 'MSport', logo: '🟡' },
+      { name: '1win', logo: '🔵' },
+      { name: 'Hollywood Bets', logo: '🟣' },
+      { name: '1xBet', logo: '🔵' },
+      { name: 'PremierBet', logo: '🟢' },
+      { name: 'Pin-Up Bet', logo: '🔴' },
+      { name: 'MelBet', logo: '🟡' },
+      { name: 'SuperBet', logo: '🔴' },
+      { name: 'BetKing', logo: '🔵' },
+      { name: 'Bwin', logo: '⚫' },
+      { name: 'William Hill', logo: '🟡' },
+      { name: 'Paddy Power', logo: '🟢' },
+      { name: 'Bet365', logo: '🟢' },
+      { name: 'SkyBet', logo: '🔵' },
+      { name: 'Betfair', logo: '🟡' },
+      { name: '888sport', logo: '🟠' },
+      { name: 'Unibet', logo: '🟢' },
+      { name: 'Mwos', logo: '🔵' },
+      { name: '22 Bet', logo: '🔵' },
+      { name: 'Dafa Bet', logo: '🔴' },
+      { name: 'Betpawa', logo: '🟢' },
+      { name: 'Stake', logo: '⚪' },
+      { name: 'Adjarabet', logo: '🔴' },
+      { name: 'Cloud bet', logo: '🔵' },
+      { name: 'Luckystar', logo: '🌟' },
+      { name: '10BET', logo: '⚫' },
+      { name: 'GG.BET', logo: '🟡' },
+      { name: 'Spin City', logo: '🔵' }
+    ];
 
-    let state = { gameState: 'connecting', round: 0, prediction: null, predRound: null, countdownStart: 0 };
-    let history = [];
-    let correctPredictions = 0;
-    let totalPredictions = 0;
-    let countdownTimer = null;
+    function renderSites() {
+      const list = document.getElementById('sitesList');
+      list.innerHTML = sites.map(s => `
+        <div class="site-item" onclick="showActivation('${s.name}')">
+          <div class="site-logo" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">${s.logo}</div>
+          <span class="site-name">${s.name}</span>
+        </div>
+      `).join('');
+    }
+    renderSites();
 
-    function setStatus(gameState) {
-      state.gameState = gameState;
-      els.statusBadge.className = 'status-badge ' + gameState;
-      const labels = {
-        waiting: 'Waiting for Next Round',
-        flying: 'Round In Progress',
-        crashed: 'Round Crashed',
-        cooldown: 'Cooldown',
-        connecting: 'Connecting...'
-      };
-      els.statusText.textContent = labels[gameState] || gameState;
+    let selectedSite = '';
+    function showActivation(site) {
+      selectedSite = site || '';
+      document.getElementById('activationModal').classList.add('active');
+      document.getElementById('activationInput').focus();
+    }
+    function hideActivation() {
+      document.getElementById('activationModal').classList.remove('active');
+      document.getElementById('activationInput').value = '';
+    }
+    function submitActivation() {
+      const code = document.getElementById('activationInput').value.trim();
+      if (!code) return;
+      hideActivation();
+      document.getElementById('siteScreen').style.display = 'none';
+      document.getElementById('predictorScreen').classList.add('active');
+      pollPrediction();
+    }
+    function goBack() {
+      document.getElementById('predictorScreen').classList.remove('active');
+      document.getElementById('siteScreen').style.display = 'block';
     }
 
-    function updatePrediction(value, round, source) {
-      state.prediction = value;
-      state.predRound = round;
-      els.predictionValue.textContent = value.toFixed(2) + 'x';
-      els.predictionValue.classList.remove('pending');
-      els.predictionRound.textContent = `Round #${round} · ${source || 'predicted'}`;
-    }
-
-    function clearPrediction() {
-      els.predictionValue.textContent = '--.--';
-      els.predictionValue.classList.add('pending');
-      els.predictionRound.textContent = 'Waiting for next prediction...';
-      state.prediction = null;
-      state.predRound = null;
-    }
-
-    function startCountdown(seconds) {
-      els.countdownWrap.style.display = 'block';
-      let remaining = seconds;
-      const total = seconds;
-      if (countdownTimer) clearInterval(countdownTimer);
-      countdownTimer = setInterval(() => {
-        remaining -= 0.1;
-        if (remaining <= 0) {
-          remaining = 0;
-          clearInterval(countdownTimer);
+    async function pollPrediction() {
+      try {
+        const res = await fetch(`${API_BASE}/api/prediction`);
+        const data = await res.json();
+        if (data.prediction && data.roundNumber) {
+          document.getElementById('predValue').textContent = data.prediction.toFixed(2) + 'x';
+          document.getElementById('predRound').querySelector('span').textContent = data.roundNumber;
+          document.getElementById('predictionResult').classList.add('active');
         }
-        const pct = (remaining / total) * 100;
-        els.countdownFill.style.width = pct + '%';
-        els.countdownText.textContent = Math.max(0, remaining).toFixed(1) + 's';
-      }, 100);
+      } catch (e) {}
     }
+    setInterval(pollPrediction, 2000);
 
-    function stopCountdown() {
-      if (countdownTimer) clearInterval(countdownTimer);
-      els.countdownWrap.style.display = 'none';
+    function startPrediction() {
+      pollPrediction();
+      document.querySelector('.vpn-ring').style.borderColor = '#4caf50';
+      document.querySelector('.vpn-text').textContent = 'Connected';
+      document.querySelector('.vpn-text').style.color = '#4caf50';
     }
-
-    function addHistory(round, mult) {
-      history.unshift({ round, mult });
-      if (history.length > 20) history.pop();
-      renderHistory();
-      // Accuracy check
-      if (state.prediction && state.predRound === round) {
-        totalPredictions++;
-        // Consider "correct" if prediction is within 15% of actual or higher
-        if (state.prediction >= mult * 0.85) {
-          correctPredictions++;
-        }
-        const acc = totalPredictions > 0 ? Math.round((correctPredictions / totalPredictions) * 100) : 0;
-        els.accuracyValue.textContent = acc + '%';
-      }
-    }
-
-    function renderHistory() {
-      els.historyList.innerHTML = history.map(h => {
-        let cls = 'mult';
-        if (h.mult < 2) cls += ' blue';
-        else if (h.mult < 10) cls += ' purple';
-        else cls += ' pink';
-        return `<div class="history-row">
-          <span class="round">Round #${h.round}</span>
-          <span class="${cls}">${h.mult.toFixed(2)}x</span>
-        </div>`;
-      }).join('');
-    }
-
-    channel.onmessage = (e) => {
-      const { type, data } = e.data || {};
-      if (!type) return;
-
-      if (type === 'GAME_STATE') {
-        els.connStatus.classList.add('connected');
-        els.connStatus.querySelector('span:last-child').textContent = 'Connected to game';
-        state.round = data.round || state.round;
-
-        if (data.state === 'waiting') {
-          setStatus('waiting');
-          startCountdown(5);
-        } else if (data.state === 'flying') {
-          setStatus('flying');
-          stopCountdown();
-        } else if (data.state === 'crashed') {
-          setStatus('crashed');
-          stopCountdown();
-          if (data.crashPoint) addHistory(data.round, data.crashPoint);
-        } else if (data.state === 'cooldown') {
-          setStatus('cooldown');
-          stopCountdown();
-        }
-      }
-
-      if (type === 'PREDICTION_UPDATE') {
-        if (data && data.crashPoint && data.round) {
-          updatePrediction(data.crashPoint, data.round, data.source);
-        }
-      }
-
-      if (type === 'ROUND_COMPLETE') {
-        if (data && data.crashPoint && data.round) {
-          addHistory(data.round, data.crashPoint);
-        }
-      }
-
-      if (type === 'FLYING_WITH') {
-        if (data && data.crashPoint && data.round) {
-          // If we didn't have a prediction, show the actual
-          if (!state.prediction || state.predRound !== data.round) {
-            updatePrediction(data.crashPoint, data.round, 'actual');
-          }
-        }
-      }
-    };
-
-    // Ping to check if game is open
-    setInterval(() => {
-      channel.postMessage({ type: 'PING_PREDICTOR', data: { timestamp: Date.now() } });
-    }, 3000);
-
-    setStatus('connecting');
   </script>
 </body>
 </html>

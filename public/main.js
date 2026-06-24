@@ -141,3 +141,37 @@
         init();
     }
 })();
+/* 10. Sync auth state with game */
+if (window.authManager) {
+    window.authManager.onAuthChange((isLoggedIn, user) => {
+      if (isLoggedIn && user) {
+        betManager.syncWithServer(user);
+        
+        // Update UI
+        const navBal = document.getElementById('navBalanceAmount');
+        if (navBal) navBal.textContent = betManager.formatCurrency(user.totalBalance || 0);
+        const navCur = document.getElementById('navBalanceCurrency');
+        if (navCur) navCur.textContent = 'USD';
+        
+        // Force refresh from server on page load
+        fetch(`${window.API_BASE_URL}/user/profile`, {
+          headers: { 'Authorization': `Bearer ${window.authManager.token}` }
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success && data.user) {
+            betManager.syncWithServer(data.user);
+          }
+        });
+      }
+    });
+  }
+  
+  /* 11. Poll server game state every second for cross-device sync */
+  setInterval(async () => {
+    try {
+      const res = await fetch(`${window.API_BASE_URL.replace('/api', '')}/api/prediction`);
+      const data = await res.json();
+      // The game engine will pick this up via its own sync logic
+    } catch (e) {}
+  }, 2000);

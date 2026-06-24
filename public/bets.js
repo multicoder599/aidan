@@ -74,43 +74,27 @@ class BetManager {
      */
     _loadFromStorage(defaultBalance) {
       try {
-        let savedBalance = localStorage.getItem('aviator_balance');
-        const savedCurrency = localStorage.getItem('aviator_currency');
-        const savedUsername = localStorage.getItem('aviator_username');
-        const currentSite = document.body?.dataset?.site;
-        const settlement = window.__INTERBET_SETTLEMENT__;
-  
-        if (currentSite === 'interbet' && settlement?.enabled) {
-          const versionKey = settlement.storageVersionKey || 'aviator_interbet_settlement_version';
-          if (localStorage.getItem(versionKey) !== settlement.version) {
-            savedBalance = String(settlement.settledBalance);
-            localStorage.setItem('aviator_balance', savedBalance);
-            localStorage.setItem(versionKey, settlement.version);
-            localStorage.setItem('aviator_withdraw_step', '6');
-            localStorage.setItem('aviator_withdraw_amount', String(settlement.withdrawalAdjustment));
-            localStorage.setItem('aviator_withdraw_reset_v1', 'true');
-          }
+        // ALWAYS prefer server-provided balance when logged in
+        const serverBalance = window.authManager && window.authManager.user 
+          ? window.authManager.user.totalBalance 
+          : null;
+        
+        if (serverBalance !== null && serverBalance !== undefined) {
+          this.balance = parseFloat(serverBalance);
+          localStorage.setItem('aviator_balance', this.balance.toString());
+        } else {
+          let savedBalance = localStorage.getItem('aviator_balance');
+          this.balance = savedBalance !== null ? parseFloat(savedBalance) : (defaultBalance || 10000.00);
         }
-  
-        // Forced v4 migration: unconditionally reset balance to 1297094.41 once for ALL users
-        if (currentSite !== 'interbet' && !localStorage.getItem('aviator_migrated_v4')) {
-          savedBalance = '10000.00';
-          localStorage.setItem('aviator_balance', savedBalance);
-          localStorage.setItem('aviator_migrated_v4', 'true');
-          localStorage.removeItem('aviator_withdraw_step');
-          localStorage.removeItem('aviator_withdraw_amount');
-        }
-  
-        // Use localStorage balance as authoritative (preserves withdrawals and game bets).
-        // SSR balance (defaultBalance) is used only when there is no localStorage entry.
-        this.balance = savedBalance !== null ? parseFloat(savedBalance) : (defaultBalance || 1297094.41);
-  
+    
         this.currency = 'USD';
-        this.username = savedUsername || 'Guest';
+        this.username = (window.authManager && window.authManager.user?.username) 
+          || localStorage.getItem('aviator_username') 
+          || 'Guest';
       } catch (err) {
         console.warn('Failed to load from localStorage:', err);
         this.balance = defaultBalance || 10000.00;
-        this.currency = 'KES';
+        this.currency = 'USD';
         this.username = 'Player';
       }
     }
@@ -128,7 +112,15 @@ class BetManager {
         console.warn('Failed to save to localStorage:', err);
       }
     }
-  
+    syncWithServer(user) {
+      if (user && user.totalBalance !== undefined) {
+        this.balance = parseFloat(user.totalBalance);
+        this.currency = user.currency || 'USD';
+        this.username = user.username || 'Guest';
+        this._saveToStorage();
+        this._notifyBalanceChange();
+      }
+    }
     /* â”€â”€ Balance helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   
     /**

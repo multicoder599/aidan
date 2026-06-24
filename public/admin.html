@@ -195,7 +195,6 @@
     }
     .conn-bar.connected .conn-dot { background: #28a909; }
   </style>
-<base target="_blank">
 </head>
 <body>
   <div class="header">
@@ -245,7 +244,8 @@
   </div>
 
   <script>
-    const channel = new BroadcastChannel('aviator_game_channel');
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3041' : 'https://aviatorguru.site';
+    
     const els = {
       gameStateValue: document.getElementById('gameStateValue'),
       currentRound: document.getElementById('currentRound'),
@@ -260,9 +260,6 @@
       connText: document.getElementById('connText')
     };
 
-    let currentRound = 0;
-    let nextSetValue = null;
-    let nextSetRound = null;
     let logs = [];
     let connected = false;
 
@@ -285,23 +282,15 @@
     }
 
     function updateGameState(state, round, multiplier) {
-      currentRound = round || currentRound;
       els.gameStateValue.textContent = state.toUpperCase();
       els.gameStateValue.className = 'game-state-value ' + state;
-      els.currentRound.textContent = currentRound > 0 ? '#' + currentRound : '--';
+      els.currentRound.textContent = round > 0 ? '#' + round : '--';
       els.liveMultiplier.textContent = multiplier ? multiplier.toFixed(2) + 'x' : '--';
       if (!connected) {
         connected = true;
         els.connBar.classList.add('connected');
-        els.connText.textContent = 'Connected to game';
+        els.connText.textContent = 'Connected to server';
       }
-    }
-
-    function showNextSet(value, round) {
-      nextSetValue = value;
-      nextSetRound = round;
-      els.nextRoundInfo.style.display = 'block';
-      els.nextRoundValue.textContent = value.toFixed(2) + 'x';
     }
 
     function generateRandom() {
@@ -314,71 +303,42 @@
       return parseFloat(val.toFixed(2));
     }
 
-    els.setBtn.addEventListener('click', () => {
+    async function pollGameState() {
+      try {
+        const res = await fetch(`${API_BASE}/api/prediction`);
+        const data = await res.json();
+        updateGameState(data.gameState, data.roundNumber, data.multiplier);
+        
+        if (data.gameState === 'crashed' && data.prediction) {
+          addLog('CRASH ' + data.prediction.toFixed(2) + 'x', data.roundNumber, 'actual');
+        }
+      } catch (e) {
+        console.warn('Poll failed:', e);
+      }
+    }
+
+    els.setBtn.addEventListener('click', async () => {
       const val = parseFloat(els.multiplierInput.value);
       if (isNaN(val) || val < 1.00) {
         alert('Enter a valid multiplier (minimum 1.00)');
         return;
       }
-      const targetRound = currentRound + 1;
-      channel.postMessage({
-        type: 'NEXT_CRASH_POINT',
-        data: { crashPoint: val, round: targetRound }
-      });
-      showNextSet(val, targetRound);
-      addLog('SET ' + val.toFixed(2) + 'x', targetRound, 'admin');
-      console.log('[Admin] Set round', targetRound, 'to', val.toFixed(2) + 'x');
+      // Note: Server generates crash points provably fair. This is for display only.
+      els.nextRoundInfo.style.display = 'block';
+      els.nextRoundValue.textContent = val.toFixed(2) + 'x';
+      addLog('SET ' + val.toFixed(2) + 'x', null, 'admin');
     });
 
     els.randomBtn.addEventListener('click', () => {
       const val = generateRandom();
       els.multiplierInput.value = val.toFixed(2);
-      const targetRound = currentRound + 1;
-      channel.postMessage({
-        type: 'NEXT_CRASH_POINT',
-        data: { crashPoint: val, round: targetRound }
-      });
-      showNextSet(val, targetRound);
-      addLog('AUTO ' + val.toFixed(2) + 'x', targetRound, 'admin');
+      els.nextRoundInfo.style.display = 'block';
+      els.nextRoundValue.textContent = val.toFixed(2) + 'x';
+      addLog('AUTO ' + val.toFixed(2) + 'x', null, 'admin');
     });
 
-    channel.onmessage = (e) => {
-      const { type, data } = e.data || {};
-      if (!type) return;
-
-      if (type === 'GAME_STATE') {
-        updateGameState(data.state, data.round, data.multiplier);
-      }
-
-      if (type === 'ROUND_COMPLETE') {
-        if (data && data.crashPoint && data.round) {
-          addLog('CRASH ' + data.crashPoint.toFixed(2) + 'x', data.round, 'actual');
-          // Clear the "next set" display if it was for this round
-          if (nextSetRound === data.round) {
-            nextSetValue = null;
-            nextSetRound = null;
-            els.nextRoundInfo.style.display = 'none';
-          }
-        }
-      }
-
-      if (type === 'FLYING_WITH') {
-        if (data && data.crashPoint && data.round) {
-          addLog('FLYING @ ' + data.crashPoint.toFixed(2) + 'x', data.round, 'actual');
-        }
-      }
-
-      if (type === 'PREDICTION_UPDATE') {
-        if (data && data.source === 'admin') {
-          showNextSet(data.crashPoint, data.round);
-        }
-      }
-    };
-
-    // Ping game tab periodically
-    setInterval(() => {
-      channel.postMessage({ type: 'PING_ADMIN', data: { timestamp: Date.now() } });
-    }, 3000);
+    setInterval(pollGameState, 1000);
+    pollGameState();
   </script>
 </body>
 </html>

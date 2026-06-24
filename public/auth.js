@@ -236,25 +236,61 @@ function createAuthModal() {
           <div class="input-group" style="margin-top:12px;">
             <label>Country</label>
             <select id="regCountry" style="width:100%; padding:12px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; margin-top:6px;">
-              <option value="US">United States</option>
-              <option value="KE">Kenya</option>
-              <option value="NG">Nigeria</option>
-              <option value="ZA">South Africa</option>
-              <option value="GH">Ghana</option>
-              <option value="TZ">Tanzania</option>
-              <option value="UG">Uganda</option>
-              <option value="RW">Rwanda</option>
-              <option value="GB">United Kingdom</option>
-              <option value="CA">Canada</option>
-              <option value="AU">Australia</option>
-              <option value="IN">India</option>
-              <option value="BR">Brazil</option>
-              <option value="DE">Germany</option>
-              <option value="FR">France</option>
-              <option value="JP">Japan</option>
-              <option value="CN">China</option>
-              <option value="OTHER">Other</option>
-            </select>
+  <option value="DZ">Algeria 🇩🇿</option>
+  <option value="AO">Angola 🇦🇴</option>
+  <option value="BJ">Benin 🇧🇯</option>
+  <option value="BW">Botswana 🇧🇼</option>
+  <option value="BF">Burkina Faso 🇧🇫</option>
+  <option value="BI">Burundi 🇧🇮</option>
+  <option value="CM">Cameroon 🇨🇲</option>
+  <option value="CV">Cape Verde 🇨🇻</option>
+  <option value="CF">Central African Republic 🇨🇫</option>
+  <option value="TD">Chad 🇹🇩</option>
+  <option value="KM">Comoros 🇰🇲</option>
+  <option value="CG">Congo 🇨🇬</option>
+  <option value="CD">DR Congo 🇨🇩</option>
+  <option value="CI">Côte d'Ivoire 🇨🇮</option>
+  <option value="DJ">Djibouti 🇩🇯</option>
+  <option value="EG">Egypt 🇪🇬</option>
+  <option value="GQ">Equatorial Guinea 🇬🇶</option>
+  <option value="ER">Eritrea 🇪🇷</option>
+  <option value="SZ">Eswatini 🇸🇿</option>
+  <option value="ET">Ethiopia 🇪🇹</option>
+  <option value="GA">Gabon 🇬🇦</option>
+  <option value="GM">Gambia 🇬🇲</option>
+  <option value="GH">Ghana 🇬🇭</option>
+  <option value="GN">Guinea 🇬🇳</option>
+  <option value="GW">Guinea-Bissau 🇬🇼</option>
+  <option value="KE" selected>Kenya 🇰🇪</option>
+  <option value="LS">Lesotho 🇱🇸</option>
+  <option value="LR">Liberia 🇱🇷</option>
+  <option value="LY">Libya 🇱🇾</option>
+  <option value="MG">Madagascar 🇲🇬</option>
+  <option value="MW">Malawi 🇲🇼</option>
+  <option value="ML">Mali 🇲🇱</option>
+  <option value="MR">Mauritania 🇲🇷</option>
+  <option value="MU">Mauritius 🇲🇺</option>
+  <option value="MA">Morocco 🇲🇦</option>
+  <option value="MZ">Mozambique 🇲🇿</option>
+  <option value="NA">Namibia 🇳🇦</option>
+  <option value="NE">Niger 🇳🇪</option>
+  <option value="NG">Nigeria 🇳🇬</option>
+  <option value="RW">Rwanda 🇷🇼</option>
+  <option value="ST">São Tomé and Príncipe 🇸🇹</option>
+  <option value="SN">Senegal 🇸🇳</option>
+  <option value="SC">Seychelles 🇸🇨</option>
+  <option value="SL">Sierra Leone 🇸🇱</option>
+  <option value="SO">Somalia 🇸🇴</option>
+  <option value="ZA">South Africa 🇿🇦</option>
+  <option value="SS">South Sudan 🇸🇸</option>
+  <option value="SD">Sudan 🇸🇩</option>
+  <option value="TZ">Tanzania 🇹🇿</option>
+  <option value="TG">Togo 🇹🇬</option>
+  <option value="TN">Tunisia 🇹🇳</option>
+  <option value="UG">Uganda 🇺🇬</option>
+  <option value="ZM">Zambia 🇿🇲</option>
+  <option value="ZW">Zimbabwe 🇿🇼</option>
+</select>
           </div>
           <div class="input-group" style="margin-top:12px;">
             <label>Phone (optional)</label>
