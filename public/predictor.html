@@ -64,49 +64,39 @@
       text-align: center;
       cursor: pointer;
     }
-    .sites-list {
-      padding: 0 16px 100px;
+    .sites-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 0 16px 40px;
       max-width: 500px;
       margin: 0 auto;
     }
     .site-item {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 16px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      justify-content: center;
+      padding: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
       cursor: pointer;
-      transition: opacity 0.2s;
+      transition: all 0.2s;
+      aspect-ratio: 1;
     }
-    .site-item:hover { opacity: 0.8; }
-    .site-logo {
+    .site-item:hover {
+      background: rgba(229,57,53,0.1);
+      border-color: rgba(229,57,53,0.3);
+      transform: translateY(-2px);
+    }
+    .site-img {
       width: 48px;
       height: 48px;
       border-radius: 8px;
       object-fit: contain;
-      background: rgba(255,255,255,0.05);
-      padding: 4px;
     }
-    .site-name {
-      font-size: 1rem;
-      font-weight: 500;
-      color: #fff;
-    }
-    .telegram-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #e53935;
-      padding: 12px;
-      text-align: center;
-      font-size: 0.9rem;
-      z-index: 100;
-    }
-    .telegram-bar a {
-      color: #fff;
-      text-decoration: underline;
-    }
+
     /* Activation Modal */
     .modal-overlay {
       display: none;
@@ -160,12 +150,19 @@
     }
     .btn-cancel { color: #e53935; }
     .btn-submit { color: #4caf50; font-weight: 600; }
-    
+    .key-error {
+      color: #e53935;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      display: none;
+    }
+
     /* Predictor Screen */
     .predictor-screen {
       display: none;
       padding: 20px;
       text-align: center;
+      min-height: 100vh;
     }
     .predictor-screen.active { display: block; }
     .aviator-logo-box {
@@ -174,9 +171,13 @@
       padding: 20px;
       margin-bottom: 30px;
       background: rgba(139,195,74,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .aviator-logo-box img {
       width: 200px;
+      height: auto;
       filter: drop-shadow(0 0 10px rgba(229,57,53,0.5));
     }
     .vpn-ring {
@@ -216,6 +217,12 @@
       font-weight: 700;
       cursor: pointer;
       margin-bottom: 20px;
+      transition: all 0.2s;
+    }
+    .start-btn:hover { filter: brightness(1.1); }
+    .start-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
     .prediction-result {
       display: none;
@@ -244,24 +251,44 @@
       cursor: pointer;
       z-index: 10;
     }
+    .error-msg {
+      color: #e53935;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: rgba(229,57,53,0.1);
+      border: 1px solid rgba(229,57,53,0.3);
+      border-radius: 10px;
+      display: none;
+    }
+    .error-msg.active { display: inline-block; }
+    .loading-spinner {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(139,195,74,0.2);
+      border-top-color: #8bc34a;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    .loading-spinner.active { display: block; }
   </style>
+<base target="_blank">
 </head>
 <body>
   <div class="header">AVIATOR PREDICTOR PRO v12.1.8</div>
-  
+
   <!-- Site Selection Screen -->
   <div id="siteScreen">
     <div class="hero">
-      <svg class="plane-img" viewBox="0 0 200 120" fill="none">
-        <path d="M180 60 L140 40 L100 50 L40 20 L20 25 L50 55 L20 60 L50 65 L20 95 L40 100 L100 70 L140 80 Z" fill="#e53935" stroke="#ff5252" stroke-width="2"/>
-        <ellipse cx="45" cy="60" rx="8" ry="20" fill="#fff" opacity="0.3" transform="rotate(-20 45 60)"/>
-        <circle cx="165" cy="60" r="3" fill="#fff"/>
-      </svg>
+      <img src="plane.png" alt="" class="plane-img">
     </div>
-    
+
     <button class="choose-btn" onclick="showActivation()">Choose Your Betting Site</button>
-    
-    <div class="sites-list" id="sitesList"></div>
+
+    <div class="sites-grid" id="sitesGrid"></div>
   </div>
 
   <!-- Activation Modal -->
@@ -273,24 +300,23 @@
         <button class="modal-btn btn-cancel" onclick="hideActivation()">Cancel</button>
         <button class="modal-btn btn-submit" onclick="submitActivation()">Submit</button>
       </div>
+      <div class="key-error" id="keyError">Invalid key. Required: Admin@370</div>
     </div>
   </div>
 
   <!-- Predictor Screen -->
   <div class="predictor-screen" id="predictorScreen">
-    <button class="back-btn" onclick="goBack()">←</button>
+    <button class="back-btn" onclick="goBack()">&#8592;</button>
     <div class="aviator-logo-box">
-      <svg viewBox="0 0 200 80" fill="none">
-        <path d="M20 40 L60 20 L100 35 L160 10 L180 15 L140 40 L180 65 L160 70 L100 45 L60 60 Z" fill="#e53935"/>
-        <text x="100" y="75" text-anchor="middle" fill="#e53935" font-size="24" font-weight="bold" font-style="italic">Aviator</text>
-      </svg>
+      <img src="aviator.png" alt="Aviator">
     </div>
     <div class="vpn-ring">
       <span class="vpn-text">Connect VPN</span>
     </div>
-    <button class="start-btn" onclick="startPrediction()">Start</button>
-    <div style="color:#888; font-size:0.85rem;">Join our telegram <a href="https://t.me/startaviator" style="color:#fff;">@startaviator</a></div>
-    
+    <button class="start-btn" id="startBtn" onclick="startPrediction()">Start</button>
+    <div class="loading-spinner" id="loadingSpinner"></div>
+    <div class="error-msg" id="errorMsg">Error: VPN key required</div>
+
     <div class="prediction-result" id="predictionResult">
       <div class="pred-value" id="predValue">2.50x</div>
       <div class="pred-label">Predicted Multiplier</div>
@@ -298,55 +324,25 @@
     </div>
   </div>
 
-  <div class="telegram-bar">
-    Telegram: <a href="https://t.me/startaviator">@startaviator</a>
-  </div>
-
   <script>
-    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3041' : 'https://aviatorguru.site';
-    
     const sites = [
-      { name: 'SportyBet', logo: '🔴' },
-      { name: 'Betway', logo: '⚫' },
-      { name: 'LottoStar', logo: '🌟' },
-      { name: 'MSport', logo: '🟡' },
-      { name: '1win', logo: '🔵' },
-      { name: 'Hollywood Bets', logo: '🟣' },
-      { name: '1xBet', logo: '🔵' },
-      { name: 'PremierBet', logo: '🟢' },
-      { name: 'Pin-Up Bet', logo: '🔴' },
-      { name: 'MelBet', logo: '🟡' },
-      { name: 'SuperBet', logo: '🔴' },
-      { name: 'BetKing', logo: '🔵' },
-      { name: 'Bwin', logo: '⚫' },
-      { name: 'William Hill', logo: '🟡' },
-      { name: 'Paddy Power', logo: '🟢' },
-      { name: 'Bet365', logo: '🟢' },
-      { name: 'SkyBet', logo: '🔵' },
-      { name: 'Betfair', logo: '🟡' },
-      { name: '888sport', logo: '🟠' },
-      { name: 'Unibet', logo: '🟢' },
-      { name: 'Mwos', logo: '🔵' },
-      { name: '22 Bet', logo: '🔵' },
-      { name: 'Dafa Bet', logo: '🔴' },
-      { name: 'Betpawa', logo: '🟢' },
-      { name: 'Stake', logo: '⚪' },
-      { name: 'Adjarabet', logo: '🔴' },
-      { name: 'Cloud bet', logo: '🔵' },
-      { name: 'Luckystar', logo: '🌟' },
-      { name: '10BET', logo: '⚫' },
-      { name: 'GG.BET', logo: '🟡' },
-      { name: 'Spin City', logo: '🔵' }
+      'SportyBet', 'Betway', 'LottoStar', 'MSport', '1win', 'HollywoodBets',
+      '1xBet', 'PremierBet', 'PinUpBet', 'MelBet', 'SuperBet', 'BetKing',
+      'Bwin', 'WilliamHill', 'PaddyPower', 'Bet365', 'SkyBet', 'Betfair',
+      '888sport', 'Unibet', 'Mwos', '22Bet', 'DafaBet', 'Betpawa',
+      'Stake', 'Adjarabet', 'Cloudbet', 'Luckystar', '10BET', 'GGBET', 'SpinCity'
     ];
 
     function renderSites() {
-      const list = document.getElementById('sitesList');
-      list.innerHTML = sites.map(s => `
-        <div class="site-item" onclick="showActivation('${s.name}')">
-          <div class="site-logo" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem;">${s.logo}</div>
-          <span class="site-name">${s.name}</span>
-        </div>
-      `).join('');
+      const grid = document.getElementById('sitesGrid');
+      grid.innerHTML = sites.map(s => {
+        const imgName = s.toLowerCase().replace(/[^a-z0-9]/g, '') + '.png';
+        return `
+          <div class="site-item" onclick="showActivation('${s}')">
+            <img src="images/${imgName}" alt="${s}" class="site-img" onerror="this.style.display='none'; this.parentElement.style.background='rgba(229,57,53,0.1)'">
+          </div>
+        `;
+      }).join('');
     }
     renderSites();
 
@@ -355,42 +351,55 @@
       selectedSite = site || '';
       document.getElementById('activationModal').classList.add('active');
       document.getElementById('activationInput').focus();
+      document.getElementById('keyError').style.display = 'none';
     }
     function hideActivation() {
       document.getElementById('activationModal').classList.remove('active');
       document.getElementById('activationInput').value = '';
+      document.getElementById('keyError').style.display = 'none';
     }
     function submitActivation() {
       const code = document.getElementById('activationInput').value.trim();
-      if (!code) return;
+      if (code !== 'Admin@370') {
+        document.getElementById('keyError').style.display = 'block';
+        return;
+      }
       hideActivation();
       document.getElementById('siteScreen').style.display = 'none';
       document.getElementById('predictorScreen').classList.add('active');
-      pollPrediction();
     }
     function goBack() {
       document.getElementById('predictorScreen').classList.remove('active');
       document.getElementById('siteScreen').style.display = 'block';
+      document.getElementById('errorMsg').classList.remove('active');
+      document.getElementById('loadingSpinner').classList.remove('active');
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('startBtn').textContent = 'Start';
+      document.querySelector('.vpn-ring').style.borderColor = '#4caf50';
+      document.querySelector('.vpn-text').textContent = 'Connect VPN';
+      document.querySelector('.vpn-text').style.color = '#e53935';
     }
-
-    async function pollPrediction() {
-      try {
-        const res = await fetch(`${API_BASE}/api/prediction`);
-        const data = await res.json();
-        if (data.prediction && data.roundNumber) {
-          document.getElementById('predValue').textContent = data.prediction.toFixed(2) + 'x';
-          document.getElementById('predRound').querySelector('span').textContent = data.roundNumber;
-          document.getElementById('predictionResult').classList.add('active');
-        }
-      } catch (e) {}
-    }
-    setInterval(pollPrediction, 2000);
 
     function startPrediction() {
-      pollPrediction();
-      document.querySelector('.vpn-ring').style.borderColor = '#4caf50';
+      const btn = document.getElementById('startBtn');
+      const spinner = document.getElementById('loadingSpinner');
+      const errorMsg = document.getElementById('errorMsg');
+
+      btn.disabled = true;
+      btn.textContent = 'Loading...';
+      spinner.classList.add('active');
+      errorMsg.classList.remove('active');
+
+      document.querySelector('.vpn-ring').style.borderColor = '#8bc34a';
       document.querySelector('.vpn-text').textContent = 'Connected';
       document.querySelector('.vpn-text').style.color = '#4caf50';
+
+      setTimeout(() => {
+        spinner.classList.remove('active');
+        btn.textContent = 'Start';
+        btn.disabled = false;
+        errorMsg.classList.add('active');
+      }, 2500);
     }
   </script>
 </body>

@@ -16,18 +16,122 @@
       min-height: 100vh;
       padding: 24px 16px;
     }
-    .header {
+
+    /* ===== LANDING PAGE (same as predictor) ===== */
+    .landing-page {
+      width: 100%;
+      min-height: 100vh;
+      background: #000;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      overflow-y: auto;
+    }
+    .landing-header {
+      background: #e53935;
+      padding: 12px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+    .landing-hero {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: linear-gradient(135deg, #1a0000 0%, #4a0000 50%, #1a0000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .landing-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(229,57,53,0.3) 0%, transparent 70%);
+    }
+    .landing-hero img {
+      width: 280px;
+      height: auto;
+      filter: drop-shadow(0 0 20px rgba(229,57,53,0.8));
+      animation: float 3s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    .landing-choose-btn {
+      display: block;
+      width: 90%;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 14px;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+    }
+    .landing-sites-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 0 16px 40px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .landing-site-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      aspect-ratio: 1;
+    }
+    .landing-site-item:hover {
+      background: rgba(229,57,53,0.1);
+      border-color: rgba(229,57,53,0.3);
+      transform: translateY(-2px);
+    }
+    .landing-site-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    /* ===== ADMIN PANEL ===== */
+    .admin-panel {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+    }
+    .admin-panel.active { display: flex; }
+    .admin-header {
       text-align: center;
       margin-bottom: 24px;
     }
-    .header h1 {
+    .admin-header h1 {
       font-size: 1.4rem;
       font-weight: 800;
       letter-spacing: 1px;
       color: #e50539;
       text-transform: uppercase;
     }
-    .header p {
+    .admin-header p {
       font-size: 0.75rem;
       color: #5e6266;
       margin-top: 4px;
@@ -204,65 +308,137 @@
     }
     .status-badge.success { background: rgba(40,169,9,0.2); color: #42c766; }
     .status-badge.error { background: rgba(229,5,57,0.2); color: #ff6b8a; }
+    .back-to-sites {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.2s;
+    }
+    .back-to-sites:hover {
+      background: rgba(229,57,53,0.2);
+      border-color: rgba(229,57,53,0.4);
+    }
   </style>
+<base target="_blank">
 <base target="_blank">
 </head>
 <body>
-  <div class="header">
-    <h1>Aviator Admin</h1>
-    <p>Manual Round Control</p>
+
+  <!-- ===== LANDING PAGE ===== -->
+  <div class="landing-page" id="landingPage">
+    <div class="landing-header">AVIATOR ADMIN PANEL</div>
+    <div class="landing-hero">
+      <img src="plane.png" alt="">
+    </div>
+    <button class="landing-choose-btn">Choose Your Betting Site</button>
+    <div class="landing-sites-grid" id="landingSitesGrid"></div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Game Status</div>
-    <div class="game-state-row">
-      <span class="game-state-label">Current State</span>
-      <span class="game-state-value" id="gameStateValue">--</span>
+  <!-- ===== ADMIN PANEL ===== -->
+  <div class="admin-panel" id="adminPanel">
+    <button class="back-to-sites" onclick="showLanding()">&#8592; Back to Sites</button>
+    <div class="admin-header">
+      <h1>Aviator Admin</h1>
+      <p>Manual Round Control</p>
     </div>
-    <div class="game-state-row">
-      <span class="game-state-label">Current Round</span>
-      <span class="game-state-value" id="currentRound">--</span>
-    </div>
-    <div class="game-state-row">
-      <span class="game-state-label">Live Multiplier</span>
-      <span class="game-state-value" id="liveMultiplier">--</span>
-    </div>
-    <div class="game-state-row">
-      <span class="game-state-label">Next Crash Point</span>
-      <span class="game-state-value" id="nextCrashPoint" style="color:#f5a623;">--</span>
-    </div>
-  </div>
 
-  <div class="next-round-info" id="nextRoundInfo" style="display:none;">
-    <div class="label">Next Round Set To</div>
-    <div class="value" id="nextRoundValue">--</div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Set Next Round</div>
-    <div class="input-group">
-      <label>Crash Multiplier (e.g. 2.50, 15.00, 1.05)</label>
-      <input type="number" id="multiplierInput" step="0.01" min="1.00" placeholder="Enter multiplier" value="2.00">
+    <div class="card">
+      <div class="card-title">Game Status</div>
+      <div class="game-state-row">
+        <span class="game-state-label">Current State</span>
+        <span class="game-state-value" id="gameStateValue">--</span>
+      </div>
+      <div class="game-state-row">
+        <span class="game-state-label">Current Round</span>
+        <span class="game-state-value" id="currentRound">--</span>
+      </div>
+      <div class="game-state-row">
+        <span class="game-state-label">Live Multiplier</span>
+        <span class="game-state-value" id="liveMultiplier">--</span>
+      </div>
+      <div class="game-state-row">
+        <span class="game-state-label">Next Crash Point</span>
+        <span class="game-state-value" id="nextCrashPoint" style="color:#f5a623;">--</span>
+      </div>
     </div>
-    <button class="btn btn-primary" id="setBtn">Set Next Round</button>
-    <button class="btn btn-secondary" id="randomBtn">Auto Generate Random</button>
-    <div id="setStatus" style="margin-top:8px; text-align:center; font-size:0.8rem;"></div>
-  </div>
 
-  <div class="log-section">
-    <div class="log-title">Action Log</div>
-    <div id="logList"></div>
-  </div>
+    <div class="next-round-info" id="nextRoundInfo" style="display:none;">
+      <div class="label">Next Round Set To</div>
+      <div class="value" id="nextRoundValue">--</div>
+    </div>
 
-  <div class="conn-bar" id="connBar">
-    <span class="conn-dot"></span>
-    <span id="connText">Waiting for game connection...</span>
+    <div class="card">
+      <div class="card-title">Set Next Round</div>
+      <div class="input-group">
+        <label>Crash Multiplier (e.g. 2.50, 15.00, 1.05)</label>
+        <input type="number" id="multiplierInput" step="0.01" min="1.00" placeholder="Enter multiplier" value="2.00">
+      </div>
+      <button class="btn btn-primary" id="setBtn">Set Next Round</button>
+      <button class="btn btn-secondary" id="randomBtn">Auto Generate Random</button>
+      <div id="setStatus" style="margin-top:8px; text-align:center; font-size:0.8rem;"></div>
+    </div>
+
+    <div class="log-section">
+      <div class="log-title">Action Log</div>
+      <div id="logList"></div>
+    </div>
+
+    <div class="conn-bar" id="connBar">
+      <span class="conn-dot"></span>
+      <span id="connText">Waiting for game connection...</span>
+    </div>
   </div>
 
   <script>
     const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3041' : 'https://aviatorguru.site';
-    const ADMIN_SECRET = 'aviator-admin-2024'; // Change this in production via env var
+    const ADMIN_SECRET = 'aviator-admin-2024';
 
+    const sites = [
+      'SportyBet', 'Betway', 'LottoStar', 'MSport', '1win', 'HollywoodBets',
+      '1xBet', 'PremierBet', 'PinUpBet', 'MelBet', 'SuperBet', 'BetKing',
+      'Bwin', 'WilliamHill', 'PaddyPower', 'Bet365', 'SkyBet', 'Betfair',
+      '888sport', 'Unibet', 'Mwos', '22Bet', 'DafaBet', 'Betpawa',
+      'Stake', 'Adjarabet', 'Cloudbet', 'Luckystar', '10BET', 'GGBET', 'SpinCity'
+    ];
+
+    // ===== LANDING PAGE =====
+    function renderLandingSites() {
+      const grid = document.getElementById('landingSitesGrid');
+      grid.innerHTML = sites.map(s => {
+        const imgName = s.toLowerCase().replace(/[^a-z0-9]/g, '') + '.png';
+        return `
+          <div class="landing-site-item" onclick="enterAdmin('${s}')">
+            <img src="images/${imgName}" alt="${s}" class="landing-site-img" onerror="this.style.display='none'; this.parentElement.style.background='rgba(229,57,53,0.1)'">
+          </div>
+        `;
+      }).join('');
+    }
+    renderLandingSites();
+
+    function enterAdmin(siteName) {
+      document.getElementById('landingPage').style.display = 'none';
+      document.getElementById('adminPanel').classList.add('active');
+      // Start polling once admin is entered
+      if (!pollInterval) {
+        pollInterval = setInterval(pollGameState, 1000);
+        pollGameState();
+      }
+    }
+
+    function showLanding() {
+      document.getElementById('landingPage').style.display = 'block';
+      document.getElementById('adminPanel').classList.remove('active');
+    }
+
+    // ===== ADMIN PANEL =====
     const els = {
       gameStateValue: document.getElementById('gameStateValue'),
       currentRound: document.getElementById('currentRound'),
@@ -281,6 +457,7 @@
 
     let logs = [];
     let connected = false;
+    let pollInterval = null;
 
     function addLog(text, round, type) {
       const time = new Date().toLocaleTimeString();
@@ -301,8 +478,8 @@
     }
 
     function updateGameState(state, round, multiplier, nextCrash) {
-      els.gameStateValue.textContent = state.toUpperCase();
-      els.gameStateValue.className = 'game-state-value ' + state;
+      els.gameStateValue.textContent = state ? state.toUpperCase() : '--';
+      els.gameStateValue.className = 'game-state-value ' + (state || '');
       els.currentRound.textContent = round > 0 ? '#' + round : '--';
       els.liveMultiplier.textContent = multiplier ? multiplier.toFixed(2) + 'x' : '--';
       els.nextCrashPoint.textContent = nextCrash ? nextCrash.toFixed(2) + 'x' : '--';
@@ -337,7 +514,6 @@
       }
     }
 
-    // SET NEXT ROUND — sends to server API
     els.setBtn.addEventListener('click', async () => {
       const val = parseFloat(els.multiplierInput.value);
       if (isNaN(val) || val < 1.00) {
@@ -381,9 +557,6 @@
       els.nextRoundValue.textContent = val.toFixed(2) + 'x';
       addLog('AUTO ' + val.toFixed(2) + 'x', null, 'admin');
     });
-
-    setInterval(pollGameState, 1000);
-    pollGameState();
   </script>
 </body>
 </html>
