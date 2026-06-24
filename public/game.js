@@ -29,7 +29,7 @@ class GameEngine {
         this.state = GameStates.WAITING;
         this.multiplier = 1.00;
         this.stateStartTime = 0;
-        this.countdown = 5;
+        this.countdown = 10;
         this.lastCrashMultiplier = null;
         this.rafId = null;
 
@@ -169,7 +169,7 @@ class GameEngine {
         this.roundNumber++;
         this._setState(GameStates.WAITING);
         this.multiplier = 1.00;
-        this.countdown = 5;
+        this.countdown = 10;
         this.betManager.clearBets();
         this.renderer.lastPlanePos = null;
         this._crashPointLocked = false;
@@ -235,7 +235,7 @@ class GameEngine {
                 this.roundNumber = data.roundNumber || 1;
                 this._setState(GameStates.WAITING);
                 this.multiplier = 1.00;
-                this.countdown = 5;
+                this.countdown = 10;
                 this.betManager.clearBets();
                 this.renderer.lastPlanePos = null;
                 const waitElapsed = data.waitElapsedMs || 0;
@@ -299,7 +299,7 @@ class GameEngine {
     }
 
     _updateFlying(elapsed) {
-        this.multiplier = 1.00 * Math.exp(0.15 * elapsed);
+        this.multiplier = 1.00 * Math.exp(0.10 * elapsed);
         this._emitMultiplier(this.multiplier);
         for (const panelId of [1, 2]) {
             if (this.betManager.hasBetActive(panelId) &&

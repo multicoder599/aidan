@@ -354,7 +354,7 @@ startNewRound();
 setInterval(() => {
   if (currentGameState.status === 'flying') {
     const elapsed = (Date.now() - currentGameState.startTime) / 1000;
-    currentGameState.multiplier = 1.00 * Math.exp(0.15 * elapsed);
+    currentGameState.multiplier = 1.00 * Math.exp(0.10 * elapsed);
     currentGameState.elapsedMs = Date.now() - currentGameState.startTime;
   } else if (currentGameState.status === 'waiting') {
     currentGameState.elapsedMs = Date.now() - currentGameState.startTime;
